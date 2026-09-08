@@ -6,17 +6,503 @@
 
 #pragma comment(lib, "opengl32.lib")
 
-#ifndef RUPTUREGL
-#define RUPTUREGL Rupture::Graphics::GL::
-#endif
-
 #ifndef APIENTRYP
 #define APIENTRYP APIENTRY *
 #endif
 
 namespace Rupture::Graphics::GL
 {
+	// GL 1.0
+	using GLvoid = void;
+	using GLenum = unsigned int;
+	using GLfloat = float;
+	using GLint = int;
+	using GLsizei = int;
+	using GLbitfield = unsigned int;
+	using GLdouble = double;
+	using GLuint = unsigned int;
+	using GLboolean = unsigned char;
+	using GLubyte = std::uint8_t;
 
+	#undef GL_DEPTH_BUFFER_BIT
+	#undef GL_STENCIL_BUFFER_BIT             
+	#undef GL_COLOR_BUFFER_BIT               
+	#undef GL_FALSE                          
+	#undef GL_TRUE                           
+	#undef GL_POINTS                         
+	#undef GL_LINES                          
+	#undef GL_LINE_LOOP                      
+	#undef GL_LINE_STRIP                     
+	#undef GL_TRIANGLES                      
+	#undef GL_TRIANGLE_STRIP                 
+	#undef GL_TRIANGLE_FAN                   
+	#undef GL_QUADS                          
+	#undef GL_NEVER                          
+	#undef GL_LESS                           
+	#undef GL_EQUAL                          
+	#undef GL_LEQUAL                         
+	#undef GL_GREATER                        
+	#undef GL_NOTEQUAL                       
+	#undef GL_GEQUAL                         
+	#undef GL_ALWAYS                         
+	#undef GL_ZERO                           
+	#undef GL_ONE                            
+	#undef GL_SRC_COLOR                      
+	#undef GL_ONE_MINUS_SRC_COLOR            
+	#undef GL_SRC_ALPHA                      
+	#undef GL_ONE_MINUS_SRC_ALPHA            
+	#undef GL_DST_ALPHA                      
+	#undef GL_ONE_MINUS_DST_ALPHA            
+	#undef GL_DST_COLOR                      
+	#undef GL_ONE_MINUS_DST_COLOR            
+	#undef GL_SRC_ALPHA_SATURATE             
+	#undef GL_NONE                           
+	#undef GL_FRONT_LEFT                     
+	#undef GL_FRONT_RIGHT                    
+	#undef GL_BACK_LEFT                      
+	#undef GL_BACK_RIGHT                     
+	#undef GL_FRONT                          
+	#undef GL_BACK                           
+	#undef GL_LEFT                           
+	#undef GL_RIGHT                          
+	#undef GL_FRONT_AND_BACK                 
+	#undef GL_NO_ERROR                       
+	#undef GL_INVALID_ENUM                   
+	#undef GL_INVALID_VALUE                  
+	#undef GL_INVALID_OPERATION              
+	#undef GL_OUT_OF_MEMORY                  
+	#undef GL_CW                             
+	#undef GL_CCW                            
+	#undef GL_POINT_SIZE                     
+	#undef GL_POINT_SIZE_RANGE               
+	#undef GL_POINT_SIZE_GRANULARITY         
+	#undef GL_LINE_SMOOTH                    
+	#undef GL_LINE_WIDTH                     
+	#undef GL_LINE_WIDTH_RANGE               
+	#undef GL_LINE_WIDTH_GRANULARITY         
+	#undef GL_POLYGON_MODE                   
+	#undef GL_POLYGON_SMOOTH                 
+	#undef GL_CULL_FACE                      
+	#undef GL_CULL_FACE_MODE                 
+	#undef GL_FRONT_FACE                     
+	#undef GL_DEPTH_RANGE                    
+	#undef GL_DEPTH_TEST                     
+	#undef GL_DEPTH_WRITEMASK                
+	#undef GL_DEPTH_CLEAR_VALUE              
+	#undef GL_DEPTH_FUNC                     
+	#undef GL_STENCIL_TEST                   
+	#undef GL_STENCIL_CLEAR_VALUE            
+	#undef GL_STENCIL_FUNC                   
+	#undef GL_STENCIL_VALUE_MASK             
+	#undef GL_STENCIL_FAIL                   
+	#undef GL_STENCIL_PASS_DEPTH_FAIL        
+	#undef GL_STENCIL_PASS_DEPTH_PASS        
+	#undef GL_STENCIL_REF                    
+	#undef GL_STENCIL_WRITEMASK              
+	#undef GL_VIEWPORT                       
+	#undef GL_DITHER                         
+	#undef GL_BLEND_DST                      
+	#undef GL_BLEND_SRC                      
+	#undef GL_BLEND                          
+	#undef GL_LOGIC_OP_MODE                  
+	#undef GL_DRAW_BUFFER                    
+	#undef GL_READ_BUFFER                    
+	#undef GL_SCISSOR_BOX                    
+	#undef GL_SCISSOR_TEST                   
+	#undef GL_COLOR_CLEAR_VALUE              
+	#undef GL_COLOR_WRITEMASK                
+	#undef GL_DOUBLEBUFFER                   
+	#undef GL_STEREO                         
+	#undef GL_LINE_SMOOTH_HINT               
+	#undef GL_POLYGON_SMOOTH_HINT            
+	#undef GL_UNPACK_SWAP_BYTES              
+	#undef GL_UNPACK_LSB_FIRST               
+	#undef GL_UNPACK_ROW_LENGTH              
+	#undef GL_UNPACK_SKIP_ROWS               
+	#undef GL_UNPACK_SKIP_PIXELS             
+	#undef GL_UNPACK_ALIGNMENT               
+	#undef GL_PACK_SWAP_BYTES                
+	#undef GL_PACK_LSB_FIRST                 
+	#undef GL_PACK_ROW_LENGTH                
+	#undef GL_PACK_SKIP_ROWS                 
+	#undef GL_PACK_SKIP_PIXELS               
+	#undef GL_PACK_ALIGNMENT                 
+	#undef GL_MAX_TEXTURE_SIZE               
+	#undef GL_MAX_VIEWPORT_DIMS              
+	#undef GL_SUBPIXEL_BITS                  
+	#undef GL_TEXTURE_1D                     
+	#undef GL_TEXTURE_2D                     
+	#undef GL_TEXTURE_WIDTH                  
+	#undef GL_TEXTURE_HEIGHT                 
+	#undef GL_TEXTURE_BORDER_COLOR           
+	#undef GL_DONT_CARE                      
+	#undef GL_FASTEST                        
+	#undef GL_NICEST                         
+	#undef GL_BYTE                           
+	#undef GL_UNSIGNED_BYTE                  
+	#undef GL_SHORT                          
+	#undef GL_UNSIGNED_SHORT                 
+	#undef GL_INT                            
+	#undef GL_UNSIGNED_INT                   
+	#undef GL_FLOAT                          
+	#undef GL_STACK_OVERFLOW                 
+	#undef GL_STACK_UNDERFLOW                
+	#undef GL_CLEAR                          
+	#undef GL_AND                            
+	#undef GL_AND_REVERSE                    
+	#undef GL_COPY                           
+	#undef GL_AND_INVERTED                   
+	#undef GL_NOOP                           
+	#undef GL_XOR                            
+	#undef GL_OR                             
+	#undef GL_NOR                            
+	#undef GL_EQUIV                          
+	#undef GL_INVERT                         
+	#undef GL_OR_REVERSE                     
+	#undef GL_COPY_INVERTED                  
+	#undef GL_OR_INVERTED                    
+	#undef GL_NAND                           
+	#undef GL_SET                            
+	#undef GL_TEXTURE                        
+	#undef GL_COLOR                          
+	#undef GL_DEPTH                          
+	#undef GL_STENCIL                        
+	#undef GL_STENCIL_INDEX                  
+	#undef GL_DEPTH_COMPONENT                
+	#undef GL_RED                            
+	#undef GL_GREEN                          
+	#undef GL_BLUE                           
+	#undef GL_ALPHA                          
+	#undef GL_RGB                            
+	#undef GL_RGBA                           
+	#undef GL_POINT                          
+	#undef GL_LINE                           
+	#undef GL_FILL                           
+	#undef GL_KEEP                           
+	#undef GL_REPLACE                        
+	#undef GL_INCR                           
+	#undef GL_DECR                           
+	#undef GL_VENDOR                         
+	#undef GL_RENDERER                       
+	#undef GL_VERSION                        
+	#undef GL_EXTENSIONS                     
+	#undef GL_NEAREST                        
+	#undef GL_LINEAR                         
+	#undef GL_NEAREST_MIPMAP_NEAREST         
+	#undef GL_LINEAR_MIPMAP_NEAREST          
+	#undef GL_NEAREST_MIPMAP_LINEAR          
+	#undef GL_LINEAR_MIPMAP_LINEAR           
+	#undef GL_TEXTURE_MAG_FILTER             
+	#undef GL_TEXTURE_MIN_FILTER             
+	#undef GL_TEXTURE_WRAP_S                 
+	#undef GL_TEXTURE_WRAP_T                 
+	#undef GL_REPEAT                         
+
+	constexpr int GL_DEPTH_BUFFER_BIT               = 0x00000100;
+	constexpr int GL_STENCIL_BUFFER_BIT             = 0x00000400;
+	constexpr int GL_COLOR_BUFFER_BIT               = 0x00004000;
+	constexpr int GL_FALSE                          = 0;
+	constexpr int GL_TRUE                           = 1;
+	constexpr int GL_POINTS                         = 0x0000;
+	constexpr int GL_LINES                          = 0x0001;
+	constexpr int GL_LINE_LOOP                      = 0x0002;
+	constexpr int GL_LINE_STRIP                     = 0x0003;
+	constexpr int GL_TRIANGLES                      = 0x0004;
+	constexpr int GL_TRIANGLE_STRIP                 = 0x0005;
+	constexpr int GL_TRIANGLE_FAN                   = 0x0006;
+	constexpr int GL_QUADS                          = 0x0007;
+	constexpr int GL_NEVER                          = 0x0200;
+	constexpr int GL_LESS                           = 0x0201;
+	constexpr int GL_EQUAL                          = 0x0202;
+	constexpr int GL_LEQUAL                         = 0x0203;
+	constexpr int GL_GREATER                        = 0x0204;
+	constexpr int GL_NOTEQUAL                       = 0x0205;
+	constexpr int GL_GEQUAL                         = 0x0206;
+	constexpr int GL_ALWAYS                         = 0x0207;
+	constexpr int GL_ZERO                           = 0;
+	constexpr int GL_ONE                            = 1;
+	constexpr int GL_SRC_COLOR                      = 0x0300;
+	constexpr int GL_ONE_MINUS_SRC_COLOR            = 0x0301;
+	constexpr int GL_SRC_ALPHA                      = 0x0302;
+	constexpr int GL_ONE_MINUS_SRC_ALPHA            = 0x0303;
+	constexpr int GL_DST_ALPHA                      = 0x0304;
+	constexpr int GL_ONE_MINUS_DST_ALPHA            = 0x0305;
+	constexpr int GL_DST_COLOR                      = 0x0306;
+	constexpr int GL_ONE_MINUS_DST_COLOR            = 0x0307;
+	constexpr int GL_SRC_ALPHA_SATURATE             = 0x0308;
+	constexpr int GL_NONE                           = 0;
+	constexpr int GL_FRONT_LEFT                     = 0x0400;
+	constexpr int GL_FRONT_RIGHT                    = 0x0401;
+	constexpr int GL_BACK_LEFT                      = 0x0402;
+	constexpr int GL_BACK_RIGHT                     = 0x0403;
+	constexpr int GL_FRONT                          = 0x0404;
+	constexpr int GL_BACK                           = 0x0405;
+	constexpr int GL_LEFT                           = 0x0406;
+	constexpr int GL_RIGHT                          = 0x0407;
+	constexpr int GL_FRONT_AND_BACK                 = 0x0408;
+	constexpr int GL_NO_ERROR                       = 0;
+	constexpr int GL_INVALID_ENUM                   = 0x0500;
+	constexpr int GL_INVALID_VALUE                  = 0x0501;
+	constexpr int GL_INVALID_OPERATION              = 0x0502;
+	constexpr int GL_OUT_OF_MEMORY                  = 0x0505;
+	constexpr int GL_CW                             = 0x0900;
+	constexpr int GL_CCW                            = 0x0901;
+	constexpr int GL_POINT_SIZE                     = 0x0B11;
+	constexpr int GL_POINT_SIZE_RANGE               = 0x0B12;
+	constexpr int GL_POINT_SIZE_GRANULARITY         = 0x0B13;
+	constexpr int GL_LINE_SMOOTH                    = 0x0B20;
+	constexpr int GL_LINE_WIDTH                     = 0x0B21;
+	constexpr int GL_LINE_WIDTH_RANGE               = 0x0B22;
+	constexpr int GL_LINE_WIDTH_GRANULARITY         = 0x0B23;
+	constexpr int GL_POLYGON_MODE                   = 0x0B40;
+	constexpr int GL_POLYGON_SMOOTH                 = 0x0B41;
+	constexpr int GL_CULL_FACE                      = 0x0B44;
+	constexpr int GL_CULL_FACE_MODE                 = 0x0B45;
+	constexpr int GL_FRONT_FACE                     = 0x0B46;
+	constexpr int GL_DEPTH_RANGE                    = 0x0B70;
+	constexpr int GL_DEPTH_TEST                     = 0x0B71;
+	constexpr int GL_DEPTH_WRITEMASK                = 0x0B72;
+	constexpr int GL_DEPTH_CLEAR_VALUE              = 0x0B73;
+	constexpr int GL_DEPTH_FUNC                     = 0x0B74;
+	constexpr int GL_STENCIL_TEST                   = 0x0B90;
+	constexpr int GL_STENCIL_CLEAR_VALUE            = 0x0B91;
+	constexpr int GL_STENCIL_FUNC                   = 0x0B92;
+	constexpr int GL_STENCIL_VALUE_MASK             = 0x0B93;
+	constexpr int GL_STENCIL_FAIL                   = 0x0B94;
+	constexpr int GL_STENCIL_PASS_DEPTH_FAIL        = 0x0B95;
+	constexpr int GL_STENCIL_PASS_DEPTH_PASS        = 0x0B96;
+	constexpr int GL_STENCIL_REF                    = 0x0B97;
+	constexpr int GL_STENCIL_WRITEMASK              = 0x0B98;
+	constexpr int GL_VIEWPORT                       = 0x0BA2;
+	constexpr int GL_DITHER                         = 0x0BD0;
+	constexpr int GL_BLEND_DST                      = 0x0BE0;
+	constexpr int GL_BLEND_SRC                      = 0x0BE1;
+	constexpr int GL_BLEND                          = 0x0BE2;
+	constexpr int GL_LOGIC_OP_MODE                  = 0x0BF0;
+	constexpr int GL_DRAW_BUFFER                    = 0x0C01;
+	constexpr int GL_READ_BUFFER                    = 0x0C02;
+	constexpr int GL_SCISSOR_BOX                    = 0x0C10;
+	constexpr int GL_SCISSOR_TEST                   = 0x0C11;
+	constexpr int GL_COLOR_CLEAR_VALUE              = 0x0C22;
+	constexpr int GL_COLOR_WRITEMASK                = 0x0C23;
+	constexpr int GL_DOUBLEBUFFER                   = 0x0C32;
+	constexpr int GL_STEREO                         = 0x0C33;
+	constexpr int GL_LINE_SMOOTH_HINT               = 0x0C52;
+	constexpr int GL_POLYGON_SMOOTH_HINT            = 0x0C53;
+	constexpr int GL_UNPACK_SWAP_BYTES              = 0x0CF0;
+	constexpr int GL_UNPACK_LSB_FIRST               = 0x0CF1;
+	constexpr int GL_UNPACK_ROW_LENGTH              = 0x0CF2;
+	constexpr int GL_UNPACK_SKIP_ROWS               = 0x0CF3;
+	constexpr int GL_UNPACK_SKIP_PIXELS             = 0x0CF4;
+	constexpr int GL_UNPACK_ALIGNMENT               = 0x0CF5;
+	constexpr int GL_PACK_SWAP_BYTES                = 0x0D00;
+	constexpr int GL_PACK_LSB_FIRST                 = 0x0D01;
+	constexpr int GL_PACK_ROW_LENGTH                = 0x0D02;
+	constexpr int GL_PACK_SKIP_ROWS                 = 0x0D03;
+	constexpr int GL_PACK_SKIP_PIXELS               = 0x0D04;
+	constexpr int GL_PACK_ALIGNMENT                 = 0x0D05;
+	constexpr int GL_MAX_TEXTURE_SIZE               = 0x0D33;
+	constexpr int GL_MAX_VIEWPORT_DIMS              = 0x0D3A;
+	constexpr int GL_SUBPIXEL_BITS                  = 0x0D50;
+	constexpr int GL_TEXTURE_1D                     = 0x0DE0;
+	constexpr int GL_TEXTURE_2D                     = 0x0DE1;
+	constexpr int GL_TEXTURE_WIDTH                  = 0x1000;
+	constexpr int GL_TEXTURE_HEIGHT                 = 0x1001;
+	constexpr int GL_TEXTURE_BORDER_COLOR           = 0x1004;
+	constexpr int GL_DONT_CARE                      = 0x1100;
+	constexpr int GL_FASTEST                        = 0x1101;
+	constexpr int GL_NICEST                         = 0x1102;
+	constexpr int GL_BYTE                           = 0x1400;
+	constexpr int GL_UNSIGNED_BYTE                  = 0x1401;
+	constexpr int GL_SHORT                          = 0x1402;
+	constexpr int GL_UNSIGNED_SHORT                 = 0x1403;
+	constexpr int GL_INT                            = 0x1404;
+	constexpr int GL_UNSIGNED_INT                   = 0x1405;
+	constexpr int GL_FLOAT                          = 0x1406;
+	constexpr int GL_STACK_OVERFLOW                 = 0x0503;
+	constexpr int GL_STACK_UNDERFLOW                = 0x0504;
+	constexpr int GL_CLEAR                          = 0x1500;
+	constexpr int GL_AND                            = 0x1501;
+	constexpr int GL_AND_REVERSE                    = 0x1502;
+	constexpr int GL_COPY                           = 0x1503;
+	constexpr int GL_AND_INVERTED                   = 0x1504;
+	constexpr int GL_NOOP                           = 0x1505;
+	constexpr int GL_XOR                            = 0x1506;
+	constexpr int GL_OR                             = 0x1507;
+	constexpr int GL_NOR                            = 0x1508;
+	constexpr int GL_EQUIV                          = 0x1509;
+	constexpr int GL_INVERT                         = 0x150A;
+	constexpr int GL_OR_REVERSE                     = 0x150B;
+	constexpr int GL_COPY_INVERTED                  = 0x150C;
+	constexpr int GL_OR_INVERTED                    = 0x150D;
+	constexpr int GL_NAND                           = 0x150E;
+	constexpr int GL_SET                            = 0x150F;
+	constexpr int GL_TEXTURE                        = 0x1702;
+	constexpr int GL_COLOR                          = 0x1800;
+	constexpr int GL_DEPTH                          = 0x1801;
+	constexpr int GL_STENCIL                        = 0x1802;
+	constexpr int GL_STENCIL_INDEX                  = 0x1901;
+	constexpr int GL_DEPTH_COMPONENT                = 0x1902;
+	constexpr int GL_RED                            = 0x1903;
+	constexpr int GL_GREEN                          = 0x1904;
+	constexpr int GL_BLUE                           = 0x1905;
+	constexpr int GL_ALPHA                          = 0x1906;
+	constexpr int GL_RGB                            = 0x1907;
+	constexpr int GL_RGBA                           = 0x1908;
+	constexpr int GL_POINT                          = 0x1B00;
+	constexpr int GL_LINE                           = 0x1B01;
+	constexpr int GL_FILL                           = 0x1B02;
+	constexpr int GL_KEEP                           = 0x1E00;
+	constexpr int GL_REPLACE                        = 0x1E01;
+	constexpr int GL_INCR                           = 0x1E02;
+	constexpr int GL_DECR                           = 0x1E03;
+	constexpr int GL_VENDOR                         = 0x1F00;
+	constexpr int GL_RENDERER                       = 0x1F01;
+	constexpr int GL_VERSION                        = 0x1F02;
+	constexpr int GL_EXTENSIONS                     = 0x1F03;
+	constexpr int GL_NEAREST                        = 0x2600;
+	constexpr int GL_LINEAR                         = 0x2601;
+	constexpr int GL_NEAREST_MIPMAP_NEAREST         = 0x2700;
+	constexpr int GL_LINEAR_MIPMAP_NEAREST          = 0x2701;
+	constexpr int GL_NEAREST_MIPMAP_LINEAR          = 0x2702;
+	constexpr int GL_LINEAR_MIPMAP_LINEAR           = 0x2703;
+	constexpr int GL_TEXTURE_MAG_FILTER             = 0x2800;
+	constexpr int GL_TEXTURE_MIN_FILTER             = 0x2801;
+	constexpr int GL_TEXTURE_WRAP_S                 = 0x2802;
+	constexpr int GL_TEXTURE_WRAP_T                 = 0x2803;
+	constexpr int GL_REPEAT                         = 0x2901;
+
+	using PFNGLCULLFACEPROC = void(APIENTRYP) (GLenum mode);
+	using PFNGLFRONTFACEPROC = void(APIENTRYP) (GLenum mode);
+	using PFNGLHINTPROC = void(APIENTRYP) (GLenum target, GLenum mode);
+	using PFNGLLINEWIDTHPROC = void(APIENTRYP) (GLfloat width);
+	using PFNGLPOINTSIZEPROC = void(APIENTRYP) (GLfloat size);
+	using PFNGLPOLYGONMODEPROC = void(APIENTRYP) (GLenum face, GLenum mode);
+	using PFNGLSCISSORPROC = void(APIENTRYP) (GLint x, GLint y, GLsizei width, GLsizei height);
+	using PFNGLTEXPARAMETERFPROC = void(APIENTRYP) (GLenum target, GLenum pname, GLfloat param);
+	using PFNGLTEXPARAMETERFVPROC = void(APIENTRYP) (GLenum target, GLenum pname, const GLfloat* params);
+	using PFNGLTEXPARAMETERIPROC = void(APIENTRYP) (GLenum target, GLenum pname, GLint param);
+	using PFNGLTEXPARAMETERIVPROC = void(APIENTRYP) (GLenum target, GLenum pname, const GLint* params);
+	using PFNGLTEXIMAGE1DPROC = void(APIENTRYP) (GLenum target, GLint level, GLint internalformat, GLsizei width, GLint border, GLenum format, GLenum type, const void* pixels);
+	using PFNGLTEXIMAGE2DPROC = void(APIENTRYP) (GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, const void* pixels);
+	using PFNGLDRAWBUFFERPROC = void(APIENTRYP) (GLenum buf);
+	using PFNGLCLEARPROC = void(APIENTRYP) (GLbitfield mask);
+	using PFNGLCLEARCOLORPROC = void(APIENTRYP) (GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha);
+	using PFNGLCLEARSTENCILPROC = void(APIENTRYP) (GLint s);
+	using PFNGLCLEARDEPTHPROC = void(APIENTRYP) (GLdouble depth);
+	using PFNGLSTENCILMASKPROC = void(APIENTRYP) (GLuint mask);
+	using PFNGLCOLORMASKPROC = void(APIENTRYP) (GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha);
+	using PFNGLDEPTHMASKPROC = void(APIENTRYP) (GLboolean flag);
+	using PFNGLDISABLEPROC = void(APIENTRYP) (GLenum cap);
+	using PFNGLENABLEPROC = void(APIENTRYP) (GLenum cap);
+	using PFNGLFINISHPROC = void(APIENTRYP) (void);
+	using PFNGLFLUSHPROC = void(APIENTRYP) (void);
+	using PFNGLBLENDFUNCPROC = void(APIENTRYP) (GLenum sfactor, GLenum dfactor);
+	using PFNGLLOGICOPPROC = void(APIENTRYP) (GLenum opcode);
+	using PFNGLSTENCILFUNCPROC = void(APIENTRYP) (GLenum func, GLint ref, GLuint mask);
+	using PFNGLSTENCILOPPROC = void(APIENTRYP) (GLenum fail, GLenum zfail, GLenum zpass);
+	using PFNGLDEPTHFUNCPROC = void(APIENTRYP) (GLenum func);
+	using PFNGLPIXELSTOREFPROC = void(APIENTRYP) (GLenum pname, GLfloat param);
+	using PFNGLPIXELSTOREIPROC = void(APIENTRYP) (GLenum pname, GLint param);
+	using PFNGLREADBUFFERPROC = void(APIENTRYP) (GLenum src);
+	using PFNGLREADPIXELSPROC = void(APIENTRYP) (GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, void* pixels);
+	using PFNGLGETBOOLEANVPROC = void(APIENTRYP) (GLenum pname, GLboolean* data);
+	using PFNGLGETDOUBLEVPROC = void (APIENTRYP ) (GLenum pname, GLdouble* data);
+	using PFNGLGETERRORPROC = GLenum(APIENTRYP ) (void);
+	using PFNGLGETFLOATVPROC = void(APIENTRYP) (GLenum pname, GLfloat* data);
+	using PFNGLGETINTEGERVPROC = void (APIENTRYP ) (GLenum pname, GLint* data);
+	using PFNGLGETSTRINGPROC = const GLubyte* (APIENTRYP ) (GLenum name);
+	using PFNGLGETTEXIMAGEPROC = void(APIENTRYP) (GLenum target, GLint level, GLenum format, GLenum type, void* pixels);
+	using PFNGLGETTEXPARAMETERFVPROC = void(APIENTRYP) (GLenum target, GLenum pname, GLfloat* params);
+	using PFNGLGETTEXPARAMETERIVPROC = void(APIENTRYP) (GLenum target, GLenum pname, GLint* params);
+	using PFNGLGETTEXLEVELPARAMETERFVPROC = void(APIENTRYP) (GLenum target, GLint level, GLenum pname, GLfloat* params);
+	using PFNGLGETTEXLEVELPARAMETERIVPROC = void (APIENTRYP ) (GLenum target, GLint level, GLenum pname, GLint* params);
+	using PFNGLISENABLEDPROC = GLboolean(APIENTRYP ) (GLenum cap);
+	using PFNGLDEPTHRANGEPROC = void(APIENTRYP) (GLdouble n, GLdouble f);
+	using PFNGLVIEWPORTPROC = void (APIENTRYP ) (GLint x, GLint y, GLsizei width, GLsizei height);
+
+	// GL 1.1
+	using GLclampf = float;
+	using GLclampd = double;
+
+	#undef GL_COLOR_LOGIC_OP                 
+	#undef GL_POLYGON_OFFSET_UNITS           
+	#undef GL_POLYGON_OFFSET_POINT           
+	#undef GL_POLYGON_OFFSET_LINE            
+	#undef GL_POLYGON_OFFSET_FILL            
+	#undef GL_POLYGON_OFFSET_FACTOR          
+	#undef GL_TEXTURE_BINDING_1D             
+	#undef GL_TEXTURE_BINDING_2D             
+	#undef GL_TEXTURE_INTERNAL_FORMAT        
+	#undef GL_TEXTURE_RED_SIZE               
+	#undef GL_TEXTURE_GREEN_SIZE             
+	#undef GL_TEXTURE_BLUE_SIZE              
+	#undef GL_TEXTURE_ALPHA_SIZE             
+	#undef GL_DOUBLE                         
+	#undef GL_PROXY_TEXTURE_1D               
+	#undef GL_PROXY_TEXTURE_2D               
+	#undef GL_R3_G3_B2                       
+	#undef GL_RGB4                           
+	#undef GL_RGB5                           
+	#undef GL_RGB8                           
+	#undef GL_RGB10                          
+	#undef GL_RGB12                          
+	#undef GL_RGB16                          
+	#undef GL_RGBA2                          
+	#undef GL_RGBA4                          
+	#undef GL_RGB5_A1                        
+	#undef GL_RGBA8                          
+	#undef GL_RGB10_A2                       
+	#undef GL_RGBA12                         
+	#undef GL_RGBA16                         
+	#undef GL_VERTEX_ARRAY   
+
+	constexpr int GL_COLOR_LOGIC_OP                 = 0x0BF2;
+	constexpr int GL_POLYGON_OFFSET_UNITS           = 0x2A00;
+	constexpr int GL_POLYGON_OFFSET_POINT           = 0x2A01;
+	constexpr int GL_POLYGON_OFFSET_LINE            = 0x2A02;
+	constexpr int GL_POLYGON_OFFSET_FILL            = 0x8037;
+	constexpr int GL_POLYGON_OFFSET_FACTOR          = 0x8038;
+	constexpr int GL_TEXTURE_BINDING_1D             = 0x8068;
+	constexpr int GL_TEXTURE_BINDING_2D             = 0x8069;
+	constexpr int GL_TEXTURE_INTERNAL_FORMAT        = 0x1003;
+	constexpr int GL_TEXTURE_RED_SIZE               = 0x805C;
+	constexpr int GL_TEXTURE_GREEN_SIZE             = 0x805D;
+	constexpr int GL_TEXTURE_BLUE_SIZE              = 0x805E;
+	constexpr int GL_TEXTURE_ALPHA_SIZE             = 0x805F;
+	constexpr int GL_DOUBLE                         = 0x140A;
+	constexpr int GL_PROXY_TEXTURE_1D               = 0x8063;
+	constexpr int GL_PROXY_TEXTURE_2D               = 0x8064;
+	constexpr int GL_R3_G3_B2                       = 0x2A10;
+	constexpr int GL_RGB4                           = 0x804F;
+	constexpr int GL_RGB5                           = 0x8050;
+	constexpr int GL_RGB8                           = 0x8051;
+	constexpr int GL_RGB10                          = 0x8052;
+	constexpr int GL_RGB12                          = 0x8053;
+	constexpr int GL_RGB16                          = 0x8054;
+	constexpr int GL_RGBA2                          = 0x8055;
+	constexpr int GL_RGBA4                          = 0x8056;
+	constexpr int GL_RGB5_A1                        = 0x8057;
+	constexpr int GL_RGBA8                          = 0x8058;
+	constexpr int GL_RGB10_A2                       = 0x8059;
+	constexpr int GL_RGBA12                         = 0x805A;
+	constexpr int GL_RGBA16                         = 0x805B;
+	constexpr int GL_VERTEX_ARRAY                   = 0x8074;
+
+	using PFNGLDRAWARRAYSPROC = void(APIENTRYP) (GLenum mode, GLint first, GLsizei count);
+	using PFNGLDRAWELEMENTSPROC = void(APIENTRYP) (GLenum mode, GLsizei count, GLenum type, const void* indices);
+	using PFNGLGETPOINTERVPROC = void(APIENTRYP) (GLenum pname, void** params);
+	using PFNGLPOLYGONOFFSETPROC = void(APIENTRYP) (GLfloat factor, GLfloat units);
+	using PFNGLCOPYTEXIMAGE1DPROC = void(APIENTRYP) (GLenum target, GLint level, GLenum internalformat, GLint x, GLint y, GLsizei width, GLint border);
+	using PFNGLCOPYTEXIMAGE2DPROC = void(APIENTRYP) (GLenum target, GLint level, GLenum internalformat, GLint x, GLint y, GLsizei width, GLsizei height, GLint border);
+	using PFNGLCOPYTEXSUBIMAGE1DPROC = void(APIENTRYP) (GLenum target, GLint level, GLint xoffset, GLint x, GLint y, GLsizei width);
+	using PFNGLCOPYTEXSUBIMAGE2DPROC = void(APIENTRYP) (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint x, GLint y, GLsizei width, GLsizei height);
+	using PFNGLTEXSUBIMAGE1DPROC = void(APIENTRYP) (GLenum target, GLint level, GLint xoffset, GLsizei width, GLenum format, GLenum type, const void* pixels);
+	using PFNGLTEXSUBIMAGE2DPROC = void(APIENTRYP) (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, const void* pixels);
+	using PFNGLBINDTEXTUREPROC = void(APIENTRYP) (GLenum target, GLuint texture);
+	using PFNGLDELETETEXTURESPROC = void(APIENTRYP) (GLsizei n, const GLuint* textures);
+	using PFNGLGENTEXTURESPROC = void (APIENTRYP ) (GLsizei n, GLuint* textures);
+	using PFNGLISTEXTUREPROC = GLboolean(APIENTRYP ) (GLuint texture);
 
 	// GL 1.2
 	constexpr int GL_UNSIGNED_BYTE_3_3_2            = 0x8032;
@@ -811,7 +1297,7 @@ namespace Rupture::Graphics::GL
 	constexpr int GL_UNIFORM_BLOCK_REFERENCED_BY_VERTEX_SHADER		= 0x8A44;
 	constexpr int GL_UNIFORM_BLOCK_REFERENCED_BY_GEOMETRY_SHADER	= 0x8A45;
 	constexpr int GL_UNIFORM_BLOCK_REFERENCED_BY_FRAGMENT_SHADER	= 0x8A46;
-	constexpr int GL_INVALID_INDEX									= 0xFFFFFFFFu;
+	constexpr std::uint32_t GL_INVALID_INDEX						= 0xFFFFFFFFu;
 
 	using PFNGLDRAWARRAYSINSTANCEDPROC = void(APIENTRYP) (GLenum mode, GLint first, GLsizei count, GLsizei instancecount);
 	using PFNGLDRAWELEMENTSINSTANCEDPROC = void(APIENTRYP) (GLenum mode, GLsizei count, GLenum type, const void* indices, GLsizei instancecount);
@@ -872,7 +1358,7 @@ namespace Rupture::Graphics::GL
 	constexpr int GL_TIMEOUT_EXPIRED							= 0x911B;
 	constexpr int GL_CONDITION_SATISFIED						= 0x911C;
 	constexpr int GL_WAIT_FAILED								= 0x911D;
-	constexpr int GL_TIMEOUT_IGNORED							= 0xFFFFFFFFFFFFFFFFull;
+	constexpr std::uint64_t GL_TIMEOUT_IGNORED					= 0xFFFFFFFFFFFFFFFFull;
 	constexpr int GL_SYNC_FLUSH_COMMANDS_BIT					= 0x00000001;
 	constexpr int GL_SAMPLE_POSITION							= 0x8E50;
 	constexpr int GL_SAMPLE_MASK								= 0x8E51;
@@ -989,6 +1475,73 @@ namespace Rupture::Graphics::GL
 	inline PFNGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormatARB{ nullptr };
 
 	// DECLARATIONS
+	
+	// 1.0
+	inline PFNGLCULLFACEPROC glCullFace{ nullptr };
+	inline PFNGLFRONTFACEPROC glFrontFace{ nullptr };
+	inline PFNGLHINTPROC glHint{ nullptr };
+	inline PFNGLLINEWIDTHPROC glLineWidth{ nullptr };
+	inline PFNGLPOINTSIZEPROC glPointSize{ nullptr };
+	inline PFNGLPOLYGONMODEPROC glPolygonMode{ nullptr };
+	inline PFNGLSCISSORPROC glScissor{ nullptr };
+	inline PFNGLTEXPARAMETERFPROC glTexParameterf{ nullptr };
+	inline PFNGLTEXPARAMETERFVPROC glTexParameterfv{ nullptr };
+	inline PFNGLTEXPARAMETERIPROC glTexParameteri{ nullptr };
+	inline PFNGLTEXPARAMETERIVPROC glTexParameteriv{ nullptr };
+	inline PFNGLTEXIMAGE1DPROC glTexImage1D{ nullptr };
+	inline PFNGLTEXIMAGE2DPROC glTexImage2D{ nullptr };
+	inline PFNGLDRAWBUFFERPROC glDrawBuffer{ nullptr };
+	inline PFNGLCLEARPROC glClear{ nullptr };
+	inline PFNGLCLEARCOLORPROC glClearColor{ nullptr };
+	inline PFNGLCLEARSTENCILPROC glClearStencil{ nullptr };
+	inline PFNGLCLEARDEPTHPROC glClearDepth{ nullptr };
+	inline PFNGLSTENCILMASKPROC glStencilMask{ nullptr };
+	inline PFNGLCOLORMASKPROC glColorMask{ nullptr };
+	inline PFNGLDEPTHMASKPROC glDepthMask{ nullptr };
+	inline PFNGLDISABLEPROC glDisable{ nullptr };
+	inline PFNGLENABLEPROC glEnable{ nullptr };
+	inline PFNGLFINISHPROC glFinish{ nullptr };
+	inline PFNGLFLUSHPROC glFlush{ nullptr };
+	inline PFNGLBLENDFUNCPROC glBlendFunc{ nullptr };
+	inline PFNGLLOGICOPPROC glLogicOp{ nullptr };
+	inline PFNGLSTENCILFUNCPROC glStencilFunc{ nullptr };
+	inline PFNGLSTENCILOPPROC glStencilOp{ nullptr };
+	inline PFNGLDEPTHFUNCPROC glDepthFunc{ nullptr };
+	inline PFNGLPIXELSTOREFPROC glPixelStoref{ nullptr };
+	inline PFNGLPIXELSTOREIPROC glPixelStorei{ nullptr };
+	inline PFNGLREADBUFFERPROC glReadBuffer{ nullptr };
+	inline PFNGLREADPIXELSPROC glReadPixels{ nullptr };
+	inline PFNGLGETBOOLEANVPROC glGetBooleanv{ nullptr };
+	inline PFNGLGETDOUBLEVPROC glGetDoublev{ nullptr };
+	inline PFNGLGETERRORPROC glGetError{ nullptr };
+	inline PFNGLGETFLOATVPROC glGetFloatv{ nullptr };
+	inline PFNGLGETINTEGERVPROC glGetIntegerv{ nullptr };
+	inline PFNGLGETSTRINGPROC glGetString{ nullptr };
+	inline PFNGLGETTEXIMAGEPROC glGetTexImage{ nullptr };
+	inline PFNGLGETTEXPARAMETERFVPROC glGetTexParameterfv{ nullptr };
+	inline PFNGLGETTEXPARAMETERIVPROC glGetTexParameteriv{ nullptr };
+	inline PFNGLGETTEXLEVELPARAMETERFVPROC glGetTexLevelParameterfv{ nullptr };
+	inline PFNGLGETTEXLEVELPARAMETERIVPROC glGetTexLevelParameteriv{ nullptr };
+	inline PFNGLISENABLEDPROC glIsEnabled{ nullptr };
+	inline PFNGLDEPTHRANGEPROC glDepthRange{ nullptr };
+	inline PFNGLVIEWPORTPROC glViewport{ nullptr };
+
+	// 1.1
+	inline PFNGLDRAWARRAYSPROC glDrawArrays{ nullptr };
+	inline PFNGLDRAWELEMENTSPROC glDrawElements{ nullptr };
+	inline PFNGLGETPOINTERVPROC glGetPointerv{ nullptr };
+	inline PFNGLPOLYGONOFFSETPROC glPolygonOffset{ nullptr };
+	inline PFNGLCOPYTEXIMAGE1DPROC glCopyTexImage1D{ nullptr };
+	inline PFNGLCOPYTEXIMAGE2DPROC glCopyTexImage2D{ nullptr };
+	inline PFNGLCOPYTEXSUBIMAGE1DPROC glCopyTexSubImage1D{ nullptr };
+	inline PFNGLCOPYTEXSUBIMAGE2DPROC glCopyTexSubImage2D{ nullptr };
+	inline PFNGLTEXSUBIMAGE1DPROC glTexSubImage1D{ nullptr };
+	inline PFNGLTEXSUBIMAGE2DPROC glTexSubImage2D{ nullptr };
+	inline PFNGLBINDTEXTUREPROC glBindTexture{ nullptr };
+	inline PFNGLDELETETEXTURESPROC glDeleteTextures{ nullptr };
+	inline PFNGLGENTEXTURESPROC glGenTextures{ nullptr };
+	inline PFNGLISTEXTUREPROC glIsTexture{ nullptr };
+
 	// 1.2
 	inline PFNGLDRAWRANGEELEMENTSPROC glDrawRangeElements{ nullptr };
 	inline PFNGLTEXIMAGE3DPROC glTexImage3D{ nullptr };

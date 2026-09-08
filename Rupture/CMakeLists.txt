@@ -6,7 +6,11 @@
 add_executable (Rupture WIN32 "Rupture.cc")
 
 target_include_directories(Rupture PRIVATE include)
-target_compile_definitions(Rupture PRIVATE __PROJECT_NAME__="${PROJECT_NAME}")
+
+target_compile_definitions(Rupture PRIVATE 
+	PROJECT_NAME="${PROJECT_NAME}"
+	$<$<CONFIG:Debug>:RUPTURE_DEBUG>
+)
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET Rupture PROPERTY CXX_STANDARD 23)

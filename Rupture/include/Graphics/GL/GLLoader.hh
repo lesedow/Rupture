@@ -2,341 +2,425 @@
 
 #include <windows.h>
 #include "Graphics/GL/GLTypes.hh"
+#include "Logger.hh"
 
 #ifndef GLLOAD
-#define GLLOAD(procName, type) \
-	do{ \
-		(procName)= \
-			reinterpret_cast<type>(wglGetProcAddress(#procName));\
-		if (procName != nullptr) \
-			std::cout << std::format("[{}][GL] Loaded {}\n", __PROJECT_NAME__, #procName); \
-	}while(0)
+#define GLLOAD(procName)\
+	do{\
+		PROC address = reinterpret_cast<PROC>(wglGetProcAddress(#procName));\
+		if (address == reinterpret_cast<PROC>(0x1) ||\
+			address == reinterpret_cast<PROC>(0x2) ||\
+			address == reinterpret_cast<PROC>(0x3) ||\
+			address == reinterpret_cast<PROC>(-1) ||\
+			address == reinterpret_cast<PROC>(0x0))\
+		{\
+			HMODULE glDLL = GetModuleHandleA("opengl32.dll");\
+			if (!glDLL)\
+				glDLL = LoadLibraryA("opengl32.dll");\
+			if(glDLL != nullptr)\
+				address = reinterpret_cast<PROC>(GetProcAddress(glDLL, #procName));\
+			\
+		}\
+		(procName) = reinterpret_cast<decltype(procName)>(address);\
+		if (!address)\
+			std::cout << std::format("[{}][GL] Failed to load {}\n", PROJECT_NAME, #procName);\
+	} while(0)
 #endif
 
 namespace Rupture::Graphics::GL
 {
+	void LoadGL10()
+	{
+		GLLOAD(glCullFace);
+		GLLOAD(glFrontFace);
+		GLLOAD(glHint);
+		GLLOAD(glLineWidth);
+		GLLOAD(glPointSize);
+		GLLOAD(glPolygonMode);
+		GLLOAD(glScissor);
+		GLLOAD(glTexParameterf);
+		GLLOAD(glTexParameterfv);
+		GLLOAD(glTexParameteri);
+		GLLOAD(glTexParameteriv);
+		GLLOAD(glTexImage1D);
+		GLLOAD(glTexImage2D);
+		GLLOAD(glDrawBuffer);
+		GLLOAD(glClear);
+		GLLOAD(glClearColor);
+		GLLOAD(glClearStencil);
+		GLLOAD(glClearDepth);
+		GLLOAD(glStencilMask);
+		GLLOAD(glColorMask);
+		GLLOAD(glDepthMask);
+		GLLOAD(glDisable);
+		GLLOAD(glEnable);
+		GLLOAD(glFinish);
+		GLLOAD(glFlush);
+		GLLOAD(glBlendFunc);
+		GLLOAD(glLogicOp);
+		GLLOAD(glStencilFunc);
+		GLLOAD(glStencilOp);
+		GLLOAD(glDepthFunc);
+		GLLOAD(glPixelStoref);
+		GLLOAD(glPixelStorei);
+		GLLOAD(glReadBuffer);
+		GLLOAD(glReadPixels);
+		GLLOAD(glGetBooleanv);
+		GLLOAD(glGetDoublev);
+		GLLOAD(glGetError);
+		GLLOAD(glGetFloatv);
+		GLLOAD(glGetIntegerv);
+		GLLOAD(glGetString);
+		GLLOAD(glGetTexImage);
+		GLLOAD(glGetTexParameterfv);
+		GLLOAD(glGetTexParameteriv);
+		GLLOAD(glGetTexLevelParameterfv);
+		GLLOAD(glGetTexLevelParameteriv);
+		GLLOAD(glIsEnabled);
+		GLLOAD(glDepthRange);
+		GLLOAD(glViewport);
+	}
+
+	void LoadGL11()
+	{
+		GLLOAD(glDrawArrays);
+		GLLOAD(glDrawElements);
+		GLLOAD(glGetPointerv);
+		GLLOAD(glPolygonOffset);
+		GLLOAD(glCopyTexImage1D);
+		GLLOAD(glCopyTexImage2D);
+		GLLOAD(glCopyTexSubImage1D);
+		GLLOAD(glCopyTexSubImage2D);
+		GLLOAD(glTexSubImage1D);
+		GLLOAD(glTexSubImage2D);
+		GLLOAD(glBindTexture);
+		GLLOAD(glDeleteTextures);
+		GLLOAD(glGenTextures);
+		GLLOAD(glIsTexture);
+	}
+
 	void LoadGL12()
 	{
-		GLLOAD(glDrawRangeElements, PFNGLDRAWRANGEELEMENTSPROC);
-		GLLOAD(glTexImage3D, PFNGLTEXIMAGE3DPROC);
-		GLLOAD(glTexSubImage3D, PFNGLTEXSUBIMAGE3DPROC);
-		GLLOAD(glCopyTexSubImage3D, PFNGLCOPYTEXSUBIMAGE3DPROC);
+		GLLOAD(glDrawRangeElements);
+		GLLOAD(glTexImage3D);
+		GLLOAD(glTexSubImage3D);
+		GLLOAD(glCopyTexSubImage3D);
 	}
 
 	void LoadGL13()
 	{
-		GLLOAD(glActiveTexture, PFNGLACTIVETEXTUREPROC);
-		GLLOAD(glSampleCoverage, PFNGLSAMPLECOVERAGEPROC);
-		GLLOAD(glCompressedTexImage3D, PFNGLCOMPRESSEDTEXIMAGE3DPROC);
-		GLLOAD(glCompressedTexImage2D, PFNGLCOMPRESSEDTEXIMAGE2DPROC);
-		GLLOAD(glCompressedTexImage1D, PFNGLCOMPRESSEDTEXIMAGE1DPROC);
-		GLLOAD(glCompressedTexSubImage3D, PFNGLCOMPRESSEDTEXSUBIMAGE3DPROC);
-		GLLOAD(glCompressedTexSubImage2D, PFNGLCOMPRESSEDTEXSUBIMAGE2DPROC);
-		GLLOAD(glCompressedTexSubImage1D, PFNGLCOMPRESSEDTEXSUBIMAGE1DPROC);
-		GLLOAD(glGetCompressedTexImage, PFNGLGETCOMPRESSEDTEXIMAGEPROC);
+		GLLOAD(glActiveTexture);
+		GLLOAD(glSampleCoverage);
+		GLLOAD(glCompressedTexImage3D);
+		GLLOAD(glCompressedTexImage2D);
+		GLLOAD(glCompressedTexImage1D);
+		GLLOAD(glCompressedTexSubImage3D);
+		GLLOAD(glCompressedTexSubImage2D);
+		GLLOAD(glCompressedTexSubImage1D);
+		GLLOAD(glGetCompressedTexImage);
 	}
 
 	void LoadGL14()
 	{
-		GLLOAD(glBlendFuncSeparate, PFNGLBLENDFUNCSEPARATEPROC);
-		GLLOAD(glMultiDrawArrays, PFNGLMULTIDRAWARRAYSPROC);
-		GLLOAD(glMultiDrawElements, PFNGLMULTIDRAWELEMENTSPROC);
-		GLLOAD(glPointParameterf, PFNGLPOINTPARAMETERFPROC);
-		GLLOAD(glPointParameterfv, PFNGLPOINTPARAMETERFVPROC);
-		GLLOAD(glPointParameteri, PFNGLPOINTPARAMETERIPROC);
-		GLLOAD(glPointParameteriv, PFNGLPOINTPARAMETERIVPROC);
-		GLLOAD(glBlendColor, PFNGLBLENDCOLORPROC);
-		GLLOAD(glBlendEquation, PFNGLBLENDEQUATIONPROC);
+		GLLOAD(glBlendFuncSeparate);
+		GLLOAD(glMultiDrawArrays);
+		GLLOAD(glMultiDrawElements);
+		GLLOAD(glPointParameterf);
+		GLLOAD(glPointParameterfv);
+		GLLOAD(glPointParameteri);
+		GLLOAD(glPointParameteriv);
+		GLLOAD(glBlendColor);
+		GLLOAD(glBlendEquation);
 	}
 
 	void LoadGL15()
 	{
-		GLLOAD(glGenQueries, PFNGLGENQUERIESPROC);
-		GLLOAD(glDeleteQueries, PFNGLDELETEQUERIESPROC);
-		GLLOAD(glIsQuery, PFNGLISQUERYPROC);
-		GLLOAD(glBeginQuery, PFNGLBEGINQUERYPROC);
-		GLLOAD(glEndQuery, PFNGLENDQUERYPROC);
-		GLLOAD(glGetQueryiv, PFNGLGETQUERYIVPROC);
-		GLLOAD(glGetQueryObjectiv, PFNGLGETQUERYOBJECTIVPROC);
-		GLLOAD(glGetQueryObjectuiv, PFNGLGETQUERYOBJECTUIVPROC);
-		GLLOAD(glBindBuffer, PFNGLBINDBUFFERPROC);
-		GLLOAD(glDeleteBuffers, PFNGLDELETEBUFFERSPROC);
-		GLLOAD(glGenBuffers, PFNGLGENBUFFERSPROC);
-		GLLOAD(glIsBuffer, PFNGLISBUFFERPROC);
-		GLLOAD(glBufferData, PFNGLBUFFERDATAPROC);
-		GLLOAD(glBufferSubData, PFNGLBUFFERSUBDATAPROC);
-		GLLOAD(glGetBufferSubData, PFNGLGETBUFFERSUBDATAPROC);
-		GLLOAD(glMapBuffer, PFNGLMAPBUFFERPROC);
-		GLLOAD(glUnmapBuffer, PFNGLUNMAPBUFFERPROC);
-		GLLOAD(glGetBufferParameteriv, PFNGLGETBUFFERPARAMETERIVPROC);
-		GLLOAD(glGetBufferPointerv, PFNGLGETBUFFERPOINTERVPROC);
+		GLLOAD(glGenQueries);
+		GLLOAD(glDeleteQueries);
+		GLLOAD(glIsQuery);
+		GLLOAD(glBeginQuery);
+		GLLOAD(glEndQuery);
+		GLLOAD(glGetQueryiv);
+		GLLOAD(glGetQueryObjectiv);
+		GLLOAD(glGetQueryObjectuiv);
+		GLLOAD(glBindBuffer);
+		GLLOAD(glDeleteBuffers);
+		GLLOAD(glGenBuffers);
+		GLLOAD(glIsBuffer);
+		GLLOAD(glBufferData);
+		GLLOAD(glBufferSubData);
+		GLLOAD(glGetBufferSubData);
+		GLLOAD(glMapBuffer);
+		GLLOAD(glUnmapBuffer);
+		GLLOAD(glGetBufferParameteriv);
+		GLLOAD(glGetBufferPointerv);
 	}
 
 	void LoadGL20()
 	{
-		GLLOAD(glBlendEquationSeparate, PFNGLBLENDEQUATIONSEPARATEPROC);
-		GLLOAD(glDrawBuffers, PFNGLDRAWBUFFERSPROC);
-		GLLOAD(glStencilOpSeparate, PFNGLSTENCILOPSEPARATEPROC);
-		GLLOAD(glStencilFuncSeparate, PFNGLSTENCILFUNCSEPARATEPROC);
-		GLLOAD(glStencilMaskSeparate, PFNGLSTENCILMASKSEPARATEPROC);
-		GLLOAD(glAttachShader, PFNGLATTACHSHADERPROC);
-		GLLOAD(glBindAttribLocation, PFNGLBINDATTRIBLOCATIONPROC);
-		GLLOAD(glCompileShader, PFNGLCOMPILESHADERPROC);
-		GLLOAD(glCreateProgram, PFNGLCREATEPROGRAMPROC);
-		GLLOAD(glCreateShader, PFNGLCREATESHADERPROC);
-		GLLOAD(glDeleteProgram, PFNGLDELETEPROGRAMPROC);
-		GLLOAD(glDeleteShader, PFNGLDELETESHADERPROC);
-		GLLOAD(glDetachShader, PFNGLDETACHSHADERPROC);
-		GLLOAD(glDisableVertexAttribArray, PFNGLDISABLEVERTEXATTRIBARRAYPROC);
-		GLLOAD(glEnableVertexAttribArray, PFNGLENABLEVERTEXATTRIBARRAYPROC);
-		GLLOAD(glGetActiveAttrib, PFNGLGETACTIVEATTRIBPROC);
-		GLLOAD(glGetActiveUniform, PFNGLGETACTIVEUNIFORMPROC);
-		GLLOAD(glGetAttachedShaders, PFNGLGETATTACHEDSHADERSPROC);
-		GLLOAD(glGetAttribLocation, PFNGLGETATTRIBLOCATIONPROC);
-		GLLOAD(glGetProgramiv, PFNGLGETPROGRAMIVPROC);
-		GLLOAD(glGetProgramInfoLog, PFNGLGETPROGRAMINFOLOGPROC);
-		GLLOAD(glGetShaderiv, PFNGLGETSHADERIVPROC);
-		GLLOAD(glGetShaderInfoLog, PFNGLGETSHADERINFOLOGPROC);
-		GLLOAD(glGetShaderSource, PFNGLGETSHADERSOURCEPROC);
-		GLLOAD(glGetUniformLocation, PFNGLGETUNIFORMLOCATIONPROC);
-		GLLOAD(glGetUniformfv, PFNGLGETUNIFORMFVPROC);
-		GLLOAD(glGetUniformiv, PFNGLGETUNIFORMIVPROC);
-		GLLOAD(glGetVertexAttribdv, PFNGLGETVERTEXATTRIBDVPROC);
-		GLLOAD(glGetVertexAttribfv, PFNGLGETVERTEXATTRIBFVPROC);
-		GLLOAD(glGetVertexAttribiv, PFNGLGETVERTEXATTRIBIVPROC);
-		GLLOAD(glGetVertexAttribPointerv, PFNGLGETVERTEXATTRIBPOINTERVPROC);
-		GLLOAD(glIsProgram, PFNGLISPROGRAMPROC);
-		GLLOAD(glIsShader, PFNGLISSHADERPROC);
-		GLLOAD(glLinkProgram, PFNGLLINKPROGRAMPROC);
-		GLLOAD(glShaderSource, PFNGLSHADERSOURCEPROC);
-		GLLOAD(glUseProgram, PFNGLUSEPROGRAMPROC);
-		GLLOAD(glUniform1f, PFNGLUNIFORM1FPROC);
-		GLLOAD(glUniform2f, PFNGLUNIFORM2FPROC);
-		GLLOAD(glUniform3f, PFNGLUNIFORM3FPROC);
-		GLLOAD(glUniform4f, PFNGLUNIFORM4FPROC);
-		GLLOAD(glUniform1i, PFNGLUNIFORM1IPROC);
-		GLLOAD(glUniform2i, PFNGLUNIFORM2IPROC);
-		GLLOAD(glUniform3i, PFNGLUNIFORM3IPROC);
-		GLLOAD(glUniform4i, PFNGLUNIFORM4IPROC);
-		GLLOAD(glUniform1fv, PFNGLUNIFORM1FVPROC);
-		GLLOAD(glUniform2fv, PFNGLUNIFORM2FVPROC);
-		GLLOAD(glUniform3fv, PFNGLUNIFORM3FVPROC);
-		GLLOAD(glUniform4fv, PFNGLUNIFORM4FVPROC);
-		GLLOAD(glUniform1iv, PFNGLUNIFORM1IVPROC);
-		GLLOAD(glUniform2iv, PFNGLUNIFORM2IVPROC);
-		GLLOAD(glUniform3iv, PFNGLUNIFORM3IVPROC);
-		GLLOAD(glUniform4iv, PFNGLUNIFORM4IVPROC);
-		GLLOAD(glUniformMatrix2fv, PFNGLUNIFORMMATRIX2FVPROC);
-		GLLOAD(glUniformMatrix3fv, PFNGLUNIFORMMATRIX3FVPROC);
-		GLLOAD(glUniformMatrix4fv, PFNGLUNIFORMMATRIX4FVPROC);
-		GLLOAD(glValidateProgram, PFNGLVALIDATEPROGRAMPROC);
-		GLLOAD(glVertexAttrib1d, PFNGLVERTEXATTRIB1DPROC);
-		GLLOAD(glVertexAttrib1dv, PFNGLVERTEXATTRIB1DVPROC);
-		GLLOAD(glVertexAttrib1f, PFNGLVERTEXATTRIB1FPROC);
-		GLLOAD(glVertexAttrib1fv, PFNGLVERTEXATTRIB1FVPROC);
-		GLLOAD(glVertexAttrib1s, PFNGLVERTEXATTRIB1SPROC);
-		GLLOAD(glVertexAttrib1sv, PFNGLVERTEXATTRIB1SVPROC);
-		GLLOAD(glVertexAttrib2d, PFNGLVERTEXATTRIB2DPROC);
-		GLLOAD(glVertexAttrib2dv, PFNGLVERTEXATTRIB2DVPROC);
-		GLLOAD(glVertexAttrib2f, PFNGLVERTEXATTRIB2FPROC);
-		GLLOAD(glVertexAttrib2fv, PFNGLVERTEXATTRIB2FVPROC);
-		GLLOAD(glVertexAttrib2s, PFNGLVERTEXATTRIB2SPROC);
-		GLLOAD(glVertexAttrib2sv, PFNGLVERTEXATTRIB2SVPROC);
-		GLLOAD(glVertexAttrib3d, PFNGLVERTEXATTRIB3DPROC);
-		GLLOAD(glVertexAttrib3dv, PFNGLVERTEXATTRIB3DVPROC);
-		GLLOAD(glVertexAttrib3f, PFNGLVERTEXATTRIB3FPROC);
-		GLLOAD(glVertexAttrib3fv, PFNGLVERTEXATTRIB3FVPROC);
-		GLLOAD(glVertexAttrib3s, PFNGLVERTEXATTRIB3SPROC);
-		GLLOAD(glVertexAttrib3sv, PFNGLVERTEXATTRIB3SVPROC);
-		GLLOAD(glVertexAttrib4Nbv, PFNGLVERTEXATTRIB4NBVPROC);
-		GLLOAD(glVertexAttrib4Niv, PFNGLVERTEXATTRIB4NIVPROC);
-		GLLOAD(glVertexAttrib4Nsv, PFNGLVERTEXATTRIB4NSVPROC);
-		GLLOAD(glVertexAttrib4Nub, PFNGLVERTEXATTRIB4NUBPROC);
-		GLLOAD(glVertexAttrib4Nubv, PFNGLVERTEXATTRIB4NUBVPROC);
-		GLLOAD(glVertexAttrib4Nuiv, PFNGLVERTEXATTRIB4NUIVPROC);
-		GLLOAD(glVertexAttrib4Nusv, PFNGLVERTEXATTRIB4NUSVPROC);
-		GLLOAD(glVertexAttrib4bv, PFNGLVERTEXATTRIB4BVPROC);
-		GLLOAD(glVertexAttrib4d, PFNGLVERTEXATTRIB4DPROC);
-		GLLOAD(glVertexAttrib4dv, PFNGLVERTEXATTRIB4DVPROC);
-		GLLOAD(glVertexAttrib4f, PFNGLVERTEXATTRIB4FPROC);
-		GLLOAD(glVertexAttrib4fv, PFNGLVERTEXATTRIB4FVPROC);
-		GLLOAD(glVertexAttrib4iv, PFNGLVERTEXATTRIB4IVPROC);
-		GLLOAD(glVertexAttrib4s, PFNGLVERTEXATTRIB4SPROC);
-		GLLOAD(glVertexAttrib4sv, PFNGLVERTEXATTRIB4SVPROC);
-		GLLOAD(glVertexAttrib4ubv, PFNGLVERTEXATTRIB4UBVPROC);
-		GLLOAD(glVertexAttrib4uiv, PFNGLVERTEXATTRIB4UIVPROC);
-		GLLOAD(glVertexAttrib4usv, PFNGLVERTEXATTRIB4USVPROC);
-		GLLOAD(glVertexAttribPointer, PFNGLVERTEXATTRIBPOINTERPROC);
+		GLLOAD(glBlendEquationSeparate);
+		GLLOAD(glDrawBuffers);
+		GLLOAD(glStencilOpSeparate);
+		GLLOAD(glStencilFuncSeparate);
+		GLLOAD(glStencilMaskSeparate);
+		GLLOAD(glAttachShader);
+		GLLOAD(glBindAttribLocation);
+		GLLOAD(glCompileShader);
+		GLLOAD(glCreateProgram);
+		GLLOAD(glCreateShader);
+		GLLOAD(glDeleteProgram);
+		GLLOAD(glDeleteShader);
+		GLLOAD(glDetachShader);
+		GLLOAD(glDisableVertexAttribArray);
+		GLLOAD(glEnableVertexAttribArray);
+		GLLOAD(glGetActiveAttrib);
+		GLLOAD(glGetActiveUniform);
+		GLLOAD(glGetAttachedShaders);
+		GLLOAD(glGetAttribLocation);
+		GLLOAD(glGetProgramiv);
+		GLLOAD(glGetProgramInfoLog);
+		GLLOAD(glGetShaderiv);
+		GLLOAD(glGetShaderInfoLog);
+		GLLOAD(glGetShaderSource);
+		GLLOAD(glGetUniformLocation);
+		GLLOAD(glGetUniformfv);
+		GLLOAD(glGetUniformiv);
+		GLLOAD(glGetVertexAttribdv);
+		GLLOAD(glGetVertexAttribfv);
+		GLLOAD(glGetVertexAttribiv);
+		GLLOAD(glGetVertexAttribPointerv);
+		GLLOAD(glIsProgram);
+		GLLOAD(glIsShader);
+		GLLOAD(glLinkProgram);
+		GLLOAD(glShaderSource);
+		GLLOAD(glUseProgram);
+		GLLOAD(glUniform1f);
+		GLLOAD(glUniform2f);
+		GLLOAD(glUniform3f);
+		GLLOAD(glUniform4f);
+		GLLOAD(glUniform1i);
+		GLLOAD(glUniform2i);
+		GLLOAD(glUniform3i);
+		GLLOAD(glUniform4i);
+		GLLOAD(glUniform1fv);
+		GLLOAD(glUniform2fv);
+		GLLOAD(glUniform3fv);
+		GLLOAD(glUniform4fv);
+		GLLOAD(glUniform1iv);
+		GLLOAD(glUniform2iv);
+		GLLOAD(glUniform3iv);
+		GLLOAD(glUniform4iv);
+		GLLOAD(glUniformMatrix2fv);
+		GLLOAD(glUniformMatrix3fv);
+		GLLOAD(glUniformMatrix4fv);
+		GLLOAD(glValidateProgram);
+		GLLOAD(glVertexAttrib1d);
+		GLLOAD(glVertexAttrib1dv);
+		GLLOAD(glVertexAttrib1f);
+		GLLOAD(glVertexAttrib1fv);
+		GLLOAD(glVertexAttrib1s);
+		GLLOAD(glVertexAttrib1sv);
+		GLLOAD(glVertexAttrib2d);
+		GLLOAD(glVertexAttrib2dv);
+		GLLOAD(glVertexAttrib2f);
+		GLLOAD(glVertexAttrib2fv);
+		GLLOAD(glVertexAttrib2s);
+		GLLOAD(glVertexAttrib2sv);
+		GLLOAD(glVertexAttrib3d);
+		GLLOAD(glVertexAttrib3dv);
+		GLLOAD(glVertexAttrib3f);
+		GLLOAD(glVertexAttrib3fv);
+		GLLOAD(glVertexAttrib3s);
+		GLLOAD(glVertexAttrib3sv);
+		GLLOAD(glVertexAttrib4Nbv);
+		GLLOAD(glVertexAttrib4Niv);
+		GLLOAD(glVertexAttrib4Nsv);
+		GLLOAD(glVertexAttrib4Nub);
+		GLLOAD(glVertexAttrib4Nubv);
+		GLLOAD(glVertexAttrib4Nuiv);
+		GLLOAD(glVertexAttrib4Nusv);
+		GLLOAD(glVertexAttrib4bv);
+		GLLOAD(glVertexAttrib4d);
+		GLLOAD(glVertexAttrib4dv);
+		GLLOAD(glVertexAttrib4f);
+		GLLOAD(glVertexAttrib4fv);
+		GLLOAD(glVertexAttrib4iv);
+		GLLOAD(glVertexAttrib4s);
+		GLLOAD(glVertexAttrib4sv);
+		GLLOAD(glVertexAttrib4ubv);
+		GLLOAD(glVertexAttrib4uiv);
+		GLLOAD(glVertexAttrib4usv);
+		GLLOAD(glVertexAttribPointer);
 	}
 
 	void LoadGL21()
 	{
-		GLLOAD(glUniformMatrix2x3fv, PFNGLUNIFORMMATRIX2X3FVPROC);
-		GLLOAD(glUniformMatrix3x2fv, PFNGLUNIFORMMATRIX3X2FVPROC);
-		GLLOAD(glUniformMatrix2x4fv, PFNGLUNIFORMMATRIX2X4FVPROC);
-		GLLOAD(glUniformMatrix4x2fv, PFNGLUNIFORMMATRIX4X2FVPROC);
-		GLLOAD(glUniformMatrix3x4fv, PFNGLUNIFORMMATRIX3X4FVPROC);
-		GLLOAD(glUniformMatrix4x3fv, PFNGLUNIFORMMATRIX4X3FVPROC);
+		GLLOAD(glUniformMatrix2x3fv);
+		GLLOAD(glUniformMatrix3x2fv);
+		GLLOAD(glUniformMatrix2x4fv);
+		GLLOAD(glUniformMatrix4x2fv);
+		GLLOAD(glUniformMatrix3x4fv);
+		GLLOAD(glUniformMatrix4x3fv);
 	}
 
 	void LoadGL30()
 	{
-		GLLOAD(glColorMaski, PFNGLCOLORMASKIPROC);
-		GLLOAD(glGetBooleani_v, PFNGLGETBOOLEANI_VPROC);
-		GLLOAD(glGetIntegeri_v, PFNGLGETINTEGERI_VPROC);
-		GLLOAD(glEnablei, PFNGLENABLEIPROC);
-		GLLOAD(glDisablei, PFNGLDISABLEIPROC);
-		GLLOAD(glIsEnabledi, PFNGLISENABLEDIPROC);
-		GLLOAD(glBeginTransformFeedback, PFNGLBEGINTRANSFORMFEEDBACKPROC);
-		GLLOAD(glEndTransformFeedback, PFNGLENDTRANSFORMFEEDBACKPROC);
-		GLLOAD(glBindBufferRange, PFNGLBINDBUFFERRANGEPROC);
-		GLLOAD(glBindBufferBase, PFNGLBINDBUFFERBASEPROC);
-		GLLOAD(glTransformFeedbackVaryings, PFNGLTRANSFORMFEEDBACKVARYINGSPROC);
-		GLLOAD(glGetTransformFeedbackVarying, PFNGLGETTRANSFORMFEEDBACKVARYINGPROC);
-		GLLOAD(glClampColor, PFNGLCLAMPCOLORPROC);
-		GLLOAD(glBeginConditionalRender, PFNGLBEGINCONDITIONALRENDERPROC);
-		GLLOAD(glEndConditionalRender, PFNGLENDCONDITIONALRENDERPROC);
-		GLLOAD(glVertexAttribIPointer, PFNGLVERTEXATTRIBIPOINTERPROC);
-		GLLOAD(glGetVertexAttribIiv, PFNGLGETVERTEXATTRIBIIVPROC);
-		GLLOAD(glGetVertexAttribIuiv, PFNGLGETVERTEXATTRIBIUIVPROC);
-		GLLOAD(glVertexAttribI1i, PFNGLVERTEXATTRIBI1IPROC);
-		GLLOAD(glVertexAttribI2i, PFNGLVERTEXATTRIBI2IPROC);
-		GLLOAD(glVertexAttribI3i, PFNGLVERTEXATTRIBI3IPROC);
-		GLLOAD(glVertexAttribI4i, PFNGLVERTEXATTRIBI4IPROC);
-		GLLOAD(glVertexAttribI1ui, PFNGLVERTEXATTRIBI1UIPROC);
-		GLLOAD(glVertexAttribI2ui, PFNGLVERTEXATTRIBI2UIPROC);
-		GLLOAD(glVertexAttribI3ui, PFNGLVERTEXATTRIBI3UIPROC);
-		GLLOAD(glVertexAttribI4ui, PFNGLVERTEXATTRIBI4UIPROC);
-		GLLOAD(glVertexAttribI1iv, PFNGLVERTEXATTRIBI1IVPROC);
-		GLLOAD(glVertexAttribI2iv, PFNGLVERTEXATTRIBI2IVPROC);
-		GLLOAD(glVertexAttribI3iv, PFNGLVERTEXATTRIBI3IVPROC);
-		GLLOAD(glVertexAttribI4iv, PFNGLVERTEXATTRIBI4IVPROC);
-		GLLOAD(glVertexAttribI1uiv, PFNGLVERTEXATTRIBI1UIVPROC);
-		GLLOAD(glVertexAttribI2uiv, PFNGLVERTEXATTRIBI2UIVPROC);
-		GLLOAD(glVertexAttribI3uiv, PFNGLVERTEXATTRIBI3UIVPROC);
-		GLLOAD(glVertexAttribI4uiv, PFNGLVERTEXATTRIBI4UIVPROC);
-		GLLOAD(glVertexAttribI4bv, PFNGLVERTEXATTRIBI4BVPROC);
-		GLLOAD(glVertexAttribI4sv, PFNGLVERTEXATTRIBI4SVPROC);
-		GLLOAD(glVertexAttribI4ubv, PFNGLVERTEXATTRIBI4UBVPROC);
-		GLLOAD(glVertexAttribI4usv, PFNGLVERTEXATTRIBI4USVPROC);
-		GLLOAD(glGetUniformuiv, PFNGLGETUNIFORMUIVPROC);
-		GLLOAD(glBindFragDataLocation, PFNGLBINDFRAGDATALOCATIONPROC);
-		GLLOAD(glGetFragDataLocation, PFNGLGETFRAGDATALOCATIONPROC);
-		GLLOAD(glUniform1ui, PFNGLUNIFORM1UIPROC);
-		GLLOAD(glUniform2ui, PFNGLUNIFORM2UIPROC);
-		GLLOAD(glUniform3ui, PFNGLUNIFORM3UIPROC);
-		GLLOAD(glUniform4ui, PFNGLUNIFORM4UIPROC);
-		GLLOAD(glUniform1uiv, PFNGLUNIFORM1UIVPROC);
-		GLLOAD(glUniform2uiv, PFNGLUNIFORM2UIVPROC);
-		GLLOAD(glUniform3uiv, PFNGLUNIFORM3UIVPROC);
-		GLLOAD(glUniform4uiv, PFNGLUNIFORM4UIVPROC);
-		GLLOAD(glTexParameterIiv, PFNGLTEXPARAMETERIIVPROC);
-		GLLOAD(glTexParameterIuiv, PFNGLTEXPARAMETERIUIVPROC);
-		GLLOAD(glGetTexParameterIiv, PFNGLGETTEXPARAMETERIIVPROC);
-		GLLOAD(glGetTexParameterIuiv, PFNGLGETTEXPARAMETERIUIVPROC);
-		GLLOAD(glClearBufferiv, PFNGLCLEARBUFFERIVPROC);
-		GLLOAD(glClearBufferuiv, PFNGLCLEARBUFFERUIVPROC);
-		GLLOAD(glClearBufferfv, PFNGLCLEARBUFFERFVPROC);
-		GLLOAD(glClearBufferfi, PFNGLCLEARBUFFERFIPROC);
-		GLLOAD(glGetStringi, PFNGLGETSTRINGIPROC);
-		GLLOAD(glIsRenderbuffer, PFNGLISRENDERBUFFERPROC);
-		GLLOAD(glBindRenderbuffer, PFNGLBINDRENDERBUFFERPROC);
-		GLLOAD(glDeleteRenderbuffers, PFNGLDELETERENDERBUFFERSPROC);
-		GLLOAD(glGenRenderbuffers, PFNGLGENRENDERBUFFERSPROC);
-		GLLOAD(glRenderbufferStorage, PFNGLRENDERBUFFERSTORAGEPROC);
-		GLLOAD(glGetRenderbufferParameteriv, PFNGLGETRENDERBUFFERPARAMETERIVPROC);
-		GLLOAD(glIsFramebuffer, PFNGLISFRAMEBUFFERPROC);
-		GLLOAD(glBindFramebuffer, PFNGLBINDFRAMEBUFFERPROC);
-		GLLOAD(glDeleteFramebuffers, PFNGLDELETEFRAMEBUFFERSPROC);
-		GLLOAD(glGenFramebuffers, PFNGLGENFRAMEBUFFERSPROC);
-		GLLOAD(glCheckFramebufferStatus, PFNGLCHECKFRAMEBUFFERSTATUSPROC);
-		GLLOAD(glFramebufferTexture1D, PFNGLFRAMEBUFFERTEXTURE1DPROC);
-		GLLOAD(glFramebufferTexture2D, PFNGLFRAMEBUFFERTEXTURE2DPROC);
-		GLLOAD(glFramebufferTexture3D, PFNGLFRAMEBUFFERTEXTURE3DPROC);
-		GLLOAD(glFramebufferRenderbuffer, PFNGLFRAMEBUFFERRENDERBUFFERPROC);
-		GLLOAD(glGetFramebufferAttachmentParameteriv, PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVPROC);
-		GLLOAD(glGenerateMipmap, PFNGLGENERATEMIPMAPPROC);
-		GLLOAD(glBlitFramebuffer, PFNGLBLITFRAMEBUFFERPROC);
-		GLLOAD(glRenderbufferStorageMultisample, PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC);
-		GLLOAD(glFramebufferTextureLayer, PFNGLFRAMEBUFFERTEXTURELAYERPROC);
-		GLLOAD(glMapBufferRange, PFNGLMAPBUFFERRANGEPROC);
-		GLLOAD(glFlushMappedBufferRange, PFNGLFLUSHMAPPEDBUFFERRANGEPROC);
-		GLLOAD(glBindVertexArray, PFNGLBINDVERTEXARRAYPROC);
-		GLLOAD(glDeleteVertexArrays, PFNGLDELETEVERTEXARRAYSPROC);
-		GLLOAD(glGenVertexArrays, PFNGLGENVERTEXARRAYSPROC);
-		GLLOAD(glIsVertexArray, PFNGLISVERTEXARRAYPROC);
+		GLLOAD(glColorMaski);
+		GLLOAD(glGetBooleani_v);
+		GLLOAD(glGetIntegeri_v);
+		GLLOAD(glEnablei);
+		GLLOAD(glDisablei);
+		GLLOAD(glIsEnabledi);
+		GLLOAD(glBeginTransformFeedback);
+		GLLOAD(glEndTransformFeedback);
+		GLLOAD(glBindBufferRange);
+		GLLOAD(glBindBufferBase);
+		GLLOAD(glTransformFeedbackVaryings);
+		GLLOAD(glGetTransformFeedbackVarying);
+		GLLOAD(glClampColor);
+		GLLOAD(glBeginConditionalRender);
+		GLLOAD(glEndConditionalRender);
+		GLLOAD(glVertexAttribIPointer);
+		GLLOAD(glGetVertexAttribIiv);
+		GLLOAD(glGetVertexAttribIuiv);
+		GLLOAD(glVertexAttribI1i);
+		GLLOAD(glVertexAttribI2i);
+		GLLOAD(glVertexAttribI3i);
+		GLLOAD(glVertexAttribI4i);
+		GLLOAD(glVertexAttribI1ui);
+		GLLOAD(glVertexAttribI2ui);
+		GLLOAD(glVertexAttribI3ui);
+		GLLOAD(glVertexAttribI4ui);
+		GLLOAD(glVertexAttribI1iv);
+		GLLOAD(glVertexAttribI2iv);
+		GLLOAD(glVertexAttribI3iv);
+		GLLOAD(glVertexAttribI4iv);
+		GLLOAD(glVertexAttribI1uiv);
+		GLLOAD(glVertexAttribI2uiv);
+		GLLOAD(glVertexAttribI3uiv);
+		GLLOAD(glVertexAttribI4uiv);
+		GLLOAD(glVertexAttribI4bv);
+		GLLOAD(glVertexAttribI4sv);
+		GLLOAD(glVertexAttribI4ubv);
+		GLLOAD(glVertexAttribI4usv);
+		GLLOAD(glGetUniformuiv);
+		GLLOAD(glBindFragDataLocation);
+		GLLOAD(glGetFragDataLocation);
+		GLLOAD(glUniform1ui);
+		GLLOAD(glUniform2ui);
+		GLLOAD(glUniform3ui);
+		GLLOAD(glUniform4ui);
+		GLLOAD(glUniform1uiv);
+		GLLOAD(glUniform2uiv);
+		GLLOAD(glUniform3uiv);
+		GLLOAD(glUniform4uiv);
+		GLLOAD(glTexParameterIiv);
+		GLLOAD(glTexParameterIuiv);
+		GLLOAD(glGetTexParameterIiv);
+		GLLOAD(glGetTexParameterIuiv);
+		GLLOAD(glClearBufferiv);
+		GLLOAD(glClearBufferuiv);
+		GLLOAD(glClearBufferfv);
+		GLLOAD(glClearBufferfi);
+		GLLOAD(glGetStringi);
+		GLLOAD(glIsRenderbuffer);
+		GLLOAD(glBindRenderbuffer);
+		GLLOAD(glDeleteRenderbuffers);
+		GLLOAD(glGenRenderbuffers);
+		GLLOAD(glRenderbufferStorage);
+		GLLOAD(glGetRenderbufferParameteriv);
+		GLLOAD(glIsFramebuffer);
+		GLLOAD(glBindFramebuffer);
+		GLLOAD(glDeleteFramebuffers);
+		GLLOAD(glGenFramebuffers);
+		GLLOAD(glCheckFramebufferStatus);
+		GLLOAD(glFramebufferTexture1D);
+		GLLOAD(glFramebufferTexture2D);
+		GLLOAD(glFramebufferTexture3D);
+		GLLOAD(glFramebufferRenderbuffer);
+		GLLOAD(glGetFramebufferAttachmentParameteriv);
+		GLLOAD(glGenerateMipmap);
+		GLLOAD(glBlitFramebuffer);
+		GLLOAD(glRenderbufferStorageMultisample);
+		GLLOAD(glFramebufferTextureLayer);
+		GLLOAD(glMapBufferRange);
+		GLLOAD(glFlushMappedBufferRange);
+		GLLOAD(glBindVertexArray);
+		GLLOAD(glDeleteVertexArrays);
+		GLLOAD(glGenVertexArrays);
+		GLLOAD(glIsVertexArray);
 	}
 
 	void LoadGL31()
 	{
-		GLLOAD(glDrawArraysInstanced, PFNGLDRAWARRAYSINSTANCEDPROC);
-		GLLOAD(glDrawElementsInstanced, PFNGLDRAWELEMENTSINSTANCEDPROC);
-		GLLOAD(glTexBuffer, PFNGLTEXBUFFERPROC);
-		GLLOAD(glPrimitiveRestartIndex, PFNGLPRIMITIVERESTARTINDEXPROC);
-		GLLOAD(glCopyBufferSubData, PFNGLCOPYBUFFERSUBDATAPROC);
-		GLLOAD(glGetUniformIndices, PFNGLGETUNIFORMINDICESPROC);
-		GLLOAD(glGetActiveUniformsiv, PFNGLGETACTIVEUNIFORMSIVPROC);
-		GLLOAD(glGetActiveUniformName, PFNGLGETACTIVEUNIFORMNAMEPROC);
-		GLLOAD(glGetUniformBlockIndex, PFNGLGETUNIFORMBLOCKINDEXPROC);
-		GLLOAD(glGetActiveUniformBlockiv, PFNGLGETACTIVEUNIFORMBLOCKIVPROC);
-		GLLOAD(glGetActiveUniformBlockName, PFNGLGETACTIVEUNIFORMBLOCKNAMEPROC);
-		GLLOAD(glUniformBlockBinding, PFNGLUNIFORMBLOCKBINDINGPROC);
+		GLLOAD(glDrawArraysInstanced);
+		GLLOAD(glDrawElementsInstanced);
+		GLLOAD(glTexBuffer);
+		GLLOAD(glPrimitiveRestartIndex);
+		GLLOAD(glCopyBufferSubData);
+		GLLOAD(glGetUniformIndices);
+		GLLOAD(glGetActiveUniformsiv);
+		GLLOAD(glGetActiveUniformName);
+		GLLOAD(glGetUniformBlockIndex);
+		GLLOAD(glGetActiveUniformBlockiv);
+		GLLOAD(glGetActiveUniformBlockName);
+		GLLOAD(glUniformBlockBinding);
 	}
 
 	void LoadGL32()
 	{
-		GLLOAD(glDrawElementsBaseVertex, PFNGLDRAWELEMENTSBASEVERTEXPROC);
-		GLLOAD(glDrawRangeElementsBaseVertex, PFNGLDRAWRANGEELEMENTSBASEVERTEXPROC);
-		GLLOAD(glDrawElementsInstancedBaseVertex, PFNGLDRAWELEMENTSINSTANCEDBASEVERTEXPROC);
-		GLLOAD(glMultiDrawElementsBaseVertex, PFNGLMULTIDRAWELEMENTSBASEVERTEXPROC);
-		GLLOAD(glProvokingVertex, PFNGLPROVOKINGVERTEXPROC);
-		GLLOAD(glFenceSync, PFNGLFENCESYNCPROC);
-		GLLOAD(glIsSync, PFNGLISSYNCPROC);
-		GLLOAD(glDeleteSync, PFNGLDELETESYNCPROC);
-		GLLOAD(glClientWaitSync, PFNGLCLIENTWAITSYNCPROC);
-		GLLOAD(glWaitSync, PFNGLWAITSYNCPROC);
-		GLLOAD(glGetInteger64v, PFNGLGETINTEGER64VPROC);
-		GLLOAD(glGetSynciv, PFNGLGETSYNCIVPROC);
-		GLLOAD(glGetInteger64i_v, PFNGLGETINTEGER64I_VPROC);
-		GLLOAD(glGetBufferParameteri64v, PFNGLGETBUFFERPARAMETERI64VPROC);
-		GLLOAD(glFramebufferTexture, PFNGLFRAMEBUFFERTEXTUREPROC);
-		GLLOAD(glTexImage2DMultisample, PFNGLTEXIMAGE2DMULTISAMPLEPROC);
-		GLLOAD(glTexImage3DMultisample, PFNGLTEXIMAGE3DMULTISAMPLEPROC);
-		GLLOAD(glGetMultisamplefv, PFNGLGETMULTISAMPLEFVPROC);
-		GLLOAD(glSampleMaski, PFNGLSAMPLEMASKIPROC);
+		GLLOAD(glDrawElementsBaseVertex);
+		GLLOAD(glDrawRangeElementsBaseVertex);
+		GLLOAD(glDrawElementsInstancedBaseVertex);
+		GLLOAD(glMultiDrawElementsBaseVertex);
+		GLLOAD(glProvokingVertex);
+		GLLOAD(glFenceSync);
+		GLLOAD(glIsSync);
+		GLLOAD(glDeleteSync);
+		GLLOAD(glClientWaitSync);
+		GLLOAD(glWaitSync);
+		GLLOAD(glGetInteger64v);
+		GLLOAD(glGetSynciv);
+		GLLOAD(glGetInteger64i_v);
+		GLLOAD(glGetBufferParameteri64v);
+		GLLOAD(glFramebufferTexture);
+		GLLOAD(glTexImage2DMultisample);
+		GLLOAD(glTexImage3DMultisample);
+		GLLOAD(glGetMultisamplefv);
+		GLLOAD(glSampleMaski);
 	}
 
 	void LoadGL33()
 	{
-		GLLOAD(glBindFragDataLocationIndexed, PFNGLBINDFRAGDATALOCATIONINDEXEDPROC);
-		GLLOAD(glGetFragDataIndex, PFNGLGETFRAGDATAINDEXPROC);
-		GLLOAD(glGenSamplers, PFNGLGENSAMPLERSPROC);
-		GLLOAD(glDeleteSamplers, PFNGLDELETESAMPLERSPROC);
-		GLLOAD(glIsSampler, PFNGLISSAMPLERPROC);
-		GLLOAD(glBindSampler, PFNGLBINDSAMPLERPROC);
-		GLLOAD(glSamplerParameteri, PFNGLSAMPLERPARAMETERIPROC);
-		GLLOAD(glSamplerParameteriv, PFNGLSAMPLERPARAMETERIVPROC);
-		GLLOAD(glSamplerParameterf, PFNGLSAMPLERPARAMETERFPROC);
-		GLLOAD(glSamplerParameterfv, PFNGLSAMPLERPARAMETERFVPROC);
-		GLLOAD(glSamplerParameterIiv, PFNGLSAMPLERPARAMETERIIVPROC);
-		GLLOAD(glSamplerParameterIuiv, PFNGLSAMPLERPARAMETERIUIVPROC);
-		GLLOAD(glGetSamplerParameteriv, PFNGLGETSAMPLERPARAMETERIVPROC);
-		GLLOAD(glGetSamplerParameterIiv, PFNGLGETSAMPLERPARAMETERIIVPROC);
-		GLLOAD(glGetSamplerParameterfv, PFNGLGETSAMPLERPARAMETERFVPROC);
-		GLLOAD(glGetSamplerParameterIuiv, PFNGLGETSAMPLERPARAMETERIUIVPROC);
-		GLLOAD(glQueryCounter, PFNGLQUERYCOUNTERPROC);
-		GLLOAD(glGetQueryObjecti64v, PFNGLGETQUERYOBJECTI64VPROC);
-		GLLOAD(glGetQueryObjectui64v, PFNGLGETQUERYOBJECTUI64VPROC);
-		GLLOAD(glVertexAttribDivisor, PFNGLVERTEXATTRIBDIVISORPROC);
-		GLLOAD(glVertexAttribP1ui, PFNGLVERTEXATTRIBP1UIPROC);
-		GLLOAD(glVertexAttribP1uiv, PFNGLVERTEXATTRIBP1UIVPROC);
-		GLLOAD(glVertexAttribP2ui, PFNGLVERTEXATTRIBP2UIPROC);
-		GLLOAD(glVertexAttribP2uiv, PFNGLVERTEXATTRIBP2UIVPROC);
-		GLLOAD(glVertexAttribP3ui, PFNGLVERTEXATTRIBP3UIPROC);
-		GLLOAD(glVertexAttribP3uiv, PFNGLVERTEXATTRIBP3UIVPROC);
-		GLLOAD(glVertexAttribP4ui, PFNGLVERTEXATTRIBP4UIPROC);
-		GLLOAD(glVertexAttribP4uiv, PFNGLVERTEXATTRIBP4UIVPROC);
-	}
+		GLLOAD(glBindFragDataLocationIndexed);
+		GLLOAD(glGetFragDataIndex);
+		GLLOAD(glGenSamplers);
+		GLLOAD(glDeleteSamplers);
+		GLLOAD(glIsSampler);
+		GLLOAD(glBindSampler);
+		GLLOAD(glSamplerParameteri);
+		GLLOAD(glSamplerParameteriv);
+		GLLOAD(glSamplerParameterf);
+		GLLOAD(glSamplerParameterfv);
+		GLLOAD(glSamplerParameterIiv);
+		GLLOAD(glSamplerParameterIuiv);
+		GLLOAD(glGetSamplerParameteriv);
+		GLLOAD(glGetSamplerParameterIiv);
+		GLLOAD(glGetSamplerParameterfv);
+		GLLOAD(glGetSamplerParameterIuiv);
+		GLLOAD(glQueryCounter);
+		GLLOAD(glGetQueryObjecti64v);
+		GLLOAD(glGetQueryObjectui64v);
+		GLLOAD(glVertexAttribDivisor);
+		GLLOAD(glVertexAttribP1ui);
+		GLLOAD(glVertexAttribP1uiv);
+		GLLOAD(glVertexAttribP2ui);
+		GLLOAD(glVertexAttribP2uiv);
+		GLLOAD(glVertexAttribP3ui);
+		GLLOAD(glVertexAttribP3uiv);
+		GLLOAD(glVertexAttribP4ui);
+		GLLOAD(glVertexAttribP4uiv);
+	}	
 
 	bool LoadGLMethods()
 	{
@@ -408,9 +492,11 @@ namespace Rupture::Graphics::GL
 		HGLRC glContext = wglCreateContext(deviceContext);
 		wglMakeCurrent(deviceContext, glContext);
 
-		GLLOAD(wglCreateContextAttribsARB, PFNGLCREATECONTEXTARBPROC);
-		GLLOAD(wglChoosePixelFormatARB, PFNGLCHOOSEPIXELFORMATARBPROC);
+		GLLOAD(wglCreateContextAttribsARB);
+		GLLOAD(wglChoosePixelFormatARB);
 
+		LoadGL10();
+		LoadGL11();
 		LoadGL12();
 		LoadGL13();
 		LoadGL14();
