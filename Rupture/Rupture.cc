@@ -7,10 +7,15 @@
 #include <iostream>
 
 #include "Graphics/GL/GLLoader.hh"
-#include "Logger.hh"
+#include "Graphics/GL/Texture2D.hh"
+#include "Utils/Logger.hh"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #pragma warning(push)
 #pragma warning(disable: 28251)
@@ -37,34 +42,21 @@ constexpr int ctxAttribList[]
 	0 
 };
 
+struct Vertex
+{
+	glm::vec3 position;
+	glm::vec4 color;
+	glm::vec2 texCoords;
+	float texId;
+};
+
+constexpr int SCREEN_W = 1280;
+constexpr int SCREEN_H = 720;
+
 LRESULT CALLBACK WindowProc(HWND windowHandle, UINT message, WPARAM wParam, LPARAM lParam);
 bool HandleWindowCreation(HWND windowHandle);
 gl::GLint CreateShader(const std::string& fragment, const std::string& vertex);
 gl::GLuint CompileShader(gl::GLenum type, const std::string& source);
-
-gl::GLuint CreateTexture(const char* path, gl::GLenum pixelFormat)
-{
-	int width, height, channels;
-	unsigned char* imageData = stbi_load(path, &width, &height, &channels, 0);
-
-	gl::GLuint texture{};
-	gl::glGenTextures(1, &texture);
-	gl::glBindTexture(gl::GL_TEXTURE_2D, texture);
-
-	gl::glTexParameteri(gl::GL_TEXTURE_2D, gl::GL_TEXTURE_WRAP_S, gl::GL_REPEAT);
-	gl::glTexParameteri(gl::GL_TEXTURE_2D, gl::GL_TEXTURE_WRAP_T, gl::GL_REPEAT);
-	gl::glTexParameteri(gl::GL_TEXTURE_2D, gl::GL_TEXTURE_MIN_FILTER, gl::GL_LINEAR_MIPMAP_LINEAR);
-	gl::glTexParameteri(gl::GL_TEXTURE_2D, gl::GL_TEXTURE_MAG_FILTER, gl::GL_LINEAR);
-
-	RUPTUREASSERT(imageData != nullptr, "Failed to load image!");
-
-	gl::glTexImage2D(gl::GL_TEXTURE_2D, 0, gl::GL_RGB, width, height, 0, pixelFormat, gl::GL_UNSIGNED_BYTE, imageData);
-	gl::glGenerateMipmap(gl::GL_TEXTURE_2D);
-
-	stbi_image_free(imageData);
-	
-	return texture;
-}
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PWSTR lpCmdLine, int cmdShow)
 {
@@ -106,7 +98,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PWSTR lpCmdLine
 		CLASS_NAME.c_str(),
 		L"OpenGL",
 		WS_OVERLAPPEDWINDOW,
-		CW_USEDEFAULT, CW_USEDEFAULT, 800, 600,
+		CW_USEDEFAULT, CW_USEDEFAULT, SCREEN_W, SCREEN_H,
 		nullptr, nullptr, hInstance, nullptr
 	);
 
@@ -147,33 +139,29 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PWSTR lpCmdLine
 	ShowWindow(window, cmdShow);
 
 	std::cout << "[Rupture][GL] Running GL VER " << gl::glGetString(gl::GL_VERSION) << "\n";
+	std::cout << "[Rupture][GL] Vendor: " << gl::glGetString(gl::GL_VENDOR) << "\n";
+	std::cout << "[Rupture][GL] Renderer: " << gl::glGetString(gl::GL_RENDERER) << "\n";
+	std::cout << "[Rupture][GL] GLSL VER: " << gl::glGetString(gl::GL_SHADING_LANGUAGE_VERSION) << "\n";
 
 	MSG message{};
 	bool running = true;
 
 	///////
 
-	stbi_set_flip_vertically_on_load(true);
+	//stbi_set_flip_vertically_on_load(true);
 
 	#pragma region TEXTURES
 	
-	gl::GLuint boxTexture{ CreateTexture("assets/container.jpg", gl::GL_RGB) };
-	gl::GLuint faceTexture{ CreateTexture("assets/awesomeface.png", gl::GL_RGBA) };
-
-	gl::glActiveTexture(gl::GL_TEXTURE0);
-	gl::glBindTexture(gl::GL_TEXTURE_2D, boxTexture);
-
-	gl::glActiveTexture(gl::GL_TEXTURE1);
-	gl::glBindTexture(gl::GL_TEXTURE_2D, faceTexture);
+	gl::Texture2D redTexture{ "assets/red_normal.png" };
+	redTexture.Bind(gl::GL_TEXTURE0);
 
 	#pragma endregion TEXTURES
 
-	float vertices[]
-	{
-		0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-		-0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-		-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-		0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f
+	float vertices[] = {
+		0.5f, 0.5f, 0.0f, 0.25f, 1.0f,
+		-0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+		-0.5f, -0.5f, 0.0f, 0.0f, 0.75f,
+		0.5f, -0.5f, 0.0f, 0.25f, 0.75f
 	};
 
 	uint32_t indices[]
@@ -183,63 +171,70 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PWSTR lpCmdLine
 	};
 
 	GLuint vao{};
-	gl::glGenVertexArrays(1, &vao);
-	gl::glBindVertexArray(vao);
+	RUPTURE_GL_CALL(gl::glGenVertexArrays(1, &vao));
+	RUPTURE_GL_CALL(gl::glBindVertexArray(vao));
 
 	GLuint vbo{};
-	gl::glGenBuffers(1, &vbo);
+	RUPTURE_GL_CALL(gl::glGenBuffers(1, &vbo));
 
 	GLuint ebo{};
-	gl::glGenBuffers(1, &ebo);
-	gl::glBindBuffer(gl::GL_ELEMENT_ARRAY_BUFFER, ebo);
-	gl::glBufferData(gl::GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, gl::GL_STATIC_DRAW);
+	RUPTURE_GL_CALL(gl::glGenBuffers(1, &ebo));
+	RUPTURE_GL_CALL(gl::glBindBuffer(gl::GL_ELEMENT_ARRAY_BUFFER, ebo));
+	RUPTURE_GL_CALL(gl::glBufferData(gl::GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, gl::GL_STATIC_DRAW));
 
-	gl::glBindBuffer(gl::GL_ARRAY_BUFFER, vbo);
-	gl::glBufferData(gl::GL_ARRAY_BUFFER, sizeof(vertices), vertices, gl::GL_STATIC_DRAW);
+	RUPTURE_GL_CALL(gl::glBindBuffer(gl::GL_ARRAY_BUFFER, vbo));
+	RUPTURE_GL_CALL(gl::glBufferData(gl::GL_ARRAY_BUFFER, sizeof(vertices), vertices, gl::GL_STATIC_DRAW));
 
-	gl::glEnableVertexAttribArray(0);
-	gl::glEnableVertexAttribArray(1);
-	gl::glEnableVertexAttribArray(2);
+	RUPTURE_GL_CALL(gl::glEnableVertexAttribArray(0));
+	RUPTURE_GL_CALL(gl::glEnableVertexAttribArray(1));
 
-	gl::glVertexAttribPointer(0, 3, gl::GL_FLOAT, gl::GL_FALSE, sizeof(float) * 8, 0);
-	gl::glVertexAttribPointer(1, 3, gl::GL_FLOAT, gl::GL_FALSE, sizeof(float) * 8, (void*)(sizeof(float)*3));
-	gl::glVertexAttribPointer(2, 2, gl::GL_FLOAT, gl::GL_FALSE, sizeof(float) * 8, (void*)(sizeof(float)*6));
+	RUPTURE_GL_CALL(gl::glVertexAttribPointer(0, 3, gl::GL_FLOAT, gl::GL_FALSE, sizeof(float) * 5, 0));
+	RUPTURE_GL_CALL(gl::glVertexAttribPointer(1, 2, gl::GL_FLOAT, gl::GL_FALSE, sizeof(float) * 5, (void*)(sizeof(float)*3)));
 
 	std::string vertexShader =
 		"#version 330 core\n"
 		"\n"
 		"layout (location = 0) in vec3 aPos;\n"
-		"layout (location = 1) in vec3 aColor;\n"
-		"layout (location = 2) in vec2 aTexCoord;\n"
-		"out vec4 vColor;\n"
+		"layout (location = 1) in vec2 aTexCoord;\n"
+		"uniform mat4 view;\n"
+		"uniform mat4 projection;\n"
+		"uniform mat4 model;\n"
 		"out vec2 TexCoord;\n"
 		"void main()\n"
 		"{\n"
-		"	gl_Position = vec4(aPos, 1.0);\n"
-		"	vColor = vec4(aColor, 1.0);\n"
+		"	gl_Position = projection * view * model * vec4(aPos, 1.0);\n"
 		"	TexCoord = aTexCoord;\n"
 		"}\n";
 
 	std::string fragmentShader =
 		"#version 330 core \n"
 		"out vec4 FragColor;\n"
-		"in vec4 vColor;\n"
 		"in vec2 TexCoord;\n"
-		"uniform sampler2D boxTexture;\n"
-		"uniform sampler2D faceTexture;\n"
+		"uniform sampler2D oTex;\n"
 		"void main()\n"
 		"{\n"
-		"	FragColor = mix(texture(boxTexture, TexCoord), texture(faceTexture, TexCoord), 0.5);\n"
+		"	FragColor = texture(oTex, TexCoord);\n"
 		"}\n";
 
+	RUPTURE_GL_CALL(gl::glEnable(gl::GL_DEPTH_TEST));
+
 	gl::GLint program = CreateShader(fragmentShader, vertexShader);
-	gl::glUseProgram(program);
+	RUPTURE_GL_CALL(gl::glUseProgram(program));
 
-	gl::glUniform1i(gl::glGetUniformLocation(program, "boxTexture"), 0);
-	gl::glUniform1i(gl::glGetUniformLocation(program, "faceTexture"), 1);
-
-	//////
+	glm::mat4 view = glm::mat4(1.0f);
+	glm::mat4 model = glm::mat4(1.0f);
 	
+	model = glm::translate(model, glm::vec3(1280.0f/2, 720.0f/2, 0.0f));
+	model = glm::scale(model, glm::vec3(64.0f, 128.0f, 1.0f));
+
+	glm::mat4 projection = glm::ortho(0.0f, 1280.0f, 720.0f, 0.0f, -1.0f, 1.0f);
+
+	RUPTURE_GL_CALL(gl::glUniformMatrix4fv(gl::glGetUniformLocation(program, "view"), 1, gl::GL_FALSE, glm::value_ptr(view)));
+	RUPTURE_GL_CALL(gl::glUniformMatrix4fv(gl::glGetUniformLocation(program, "projection"), 1, gl::GL_FALSE, glm::value_ptr(projection)));
+	RUPTURE_GL_CALL(gl::glUniformMatrix4fv(gl::glGetUniformLocation(program, "model"), 1, gl::GL_FALSE, glm::value_ptr(model)));
+
+	RUPTURE_GL_CALL(gl::glUniform1i(gl::glGetUniformLocation(program, "oTex"), 0));
+
 	while (running)
 	{
 		while (PeekMessage(&message, nullptr, 0, 0, PM_REMOVE))
@@ -251,16 +246,10 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PWSTR lpCmdLine
 			DispatchMessage(&message);
 		}
 
-		gl::glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-		gl::glClear(gl::GL_COLOR_BUFFER_BIT);
+		RUPTURE_GL_CALL(gl::glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
+		RUPTURE_GL_CALL(gl::glClear(gl::GL_COLOR_BUFFER_BIT | gl::GL_DEPTH_BUFFER_BIT));
 
-		gl::glDrawElements(gl::GL_TRIANGLES, 6, gl::GL_UNSIGNED_INT, nullptr);
-
-		gl::GLenum error = gl::glGetError();
-		if (error != gl::GL_NO_ERROR)
-		{
-			std::cout << "GL ERROR: 0x" << std::hex << error << "\n";
-		}
+		RUPTURE_GL_CALL(gl::glDrawElements(gl::GL_TRIANGLES, 6, gl::GL_UNSIGNED_INT, nullptr));
 
 		SwapBuffers(deviceContext);
 	}
@@ -270,23 +259,25 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PWSTR lpCmdLine
 
 gl::GLuint CompileShader(GLenum type, const std::string& source)
 {
-	gl::GLuint id = gl::glCreateShader(type);
+	gl::GLuint id{};
+	RUPTURE_GL_CALL(id = gl::glCreateShader(type));
 	const char* src = source.c_str();
-	gl::glShaderSource(id, 1, &src, nullptr);
-	gl::glCompileShader(id);
 
-	// TODO: Error handling
+	RUPTURE_GL_CALL(gl::glShaderSource(id, 1, &src, nullptr));
+	RUPTURE_GL_CALL(gl::glCompileShader(id));
+
 	gl::GLint result{};
-	gl::glGetShaderiv(id, gl::GL_COMPILE_STATUS, &result);
+	RUPTURE_GL_CALL(gl::glGetShaderiv(id, gl::GL_COMPILE_STATUS, &result));
+
 	if (result == gl::GL_FALSE) {
 		gl::GLint length{};
 
-		gl::glGetShaderiv(id, gl::GL_INFO_LOG_LENGTH, &length);
+		RUPTURE_GL_CALL(gl::glGetShaderiv(id, gl::GL_INFO_LOG_LENGTH, &length));
 
 		std::string message{};
 		message.resize(length);
 
-		gl::glGetShaderInfoLog(id, length, nullptr, message.data());
+		RUPTURE_GL_CALL(gl::glGetShaderInfoLog(id, length, nullptr, message.data()));
 
 		std::cout << "Failed to compile shader: " << message << "\n";
 	};
@@ -296,37 +287,37 @@ gl::GLuint CompileShader(GLenum type, const std::string& source)
 
 gl::GLint CreateShader(const std::string& fragment, const std::string& vertex)
 {
-	gl::GLuint program = gl::glCreateProgram();
+	gl::GLuint program{};
+	RUPTURE_GL_CALL(program = gl::glCreateProgram());
+
 	gl::GLuint vertexShader{ CompileShader(gl::GL_VERTEX_SHADER, vertex) };
 	gl::GLuint fragmentShader{ CompileShader(gl::GL_FRAGMENT_SHADER, fragment)};
 
-	gl::glAttachShader(program, vertexShader);
-	gl::glAttachShader(program, fragmentShader);
-	gl::glGetError();
+	RUPTURE_GL_CALL(gl::glAttachShader(program, vertexShader));
+	RUPTURE_GL_CALL(gl::glAttachShader(program, fragmentShader));
 
-	gl::glLinkProgram(program);
+	RUPTURE_GL_CALL(gl::glLinkProgram(program));
 
 	gl::GLint status{};
-	gl::glGetProgramiv(program, gl::GL_LINK_STATUS, &status);
+	RUPTURE_GL_CALL(gl::glGetProgramiv(program, gl::GL_LINK_STATUS, &status));
 
 	if (status == gl::GL_FALSE)
 	{
 		gl::GLint length{};
 
-		gl::glGetProgramiv(program, gl::GL_INFO_LOG_LENGTH, &length);
+		RUPTURE_GL_CALL(gl::glGetProgramiv(program, gl::GL_INFO_LOG_LENGTH, &length));
 
 		std::string message{};
 		message.resize(length);
-
-		gl::glGetShaderInfoLog(program, length, nullptr, message.data());
+		
+		RUPTURE_GL_CALL(gl::glGetShaderInfoLog(program, length, nullptr, message.data()));
 
 		std::cout << "Failed to link program: " << message << "\n";
 	}
 
-	gl::glValidateProgram(program);
-
-	gl::glDeleteShader(vertexShader);
-	gl::glDeleteShader(fragmentShader);
+	RUPTURE_GL_CALL(gl::glValidateProgram(program));
+	RUPTURE_GL_CALL(gl::glDeleteShader(vertexShader));
+	RUPTURE_GL_CALL(gl::glDeleteShader(fragmentShader));
 
 	return program;
 }

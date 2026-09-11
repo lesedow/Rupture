@@ -1,0 +1,3 @@
+[submodule "Rupture/external/glm"]
+	path = Rupture/external/glm
+	url = https://github.com/g-truc/glm

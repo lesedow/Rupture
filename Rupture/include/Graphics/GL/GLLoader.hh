@@ -1,34 +1,39 @@
 #pragma once 
 
 #include <windows.h>
+#include <any>
+
 #include "Graphics/GL/GLTypes.hh"
-#include "Logger.hh"
+#include "Utils/Logger.hh"
 
 #ifndef GLLOAD
-#define GLLOAD(procName)\
-	do{\
-		PROC address = reinterpret_cast<PROC>(wglGetProcAddress(#procName));\
-		if (address == reinterpret_cast<PROC>(0x1) ||\
-			address == reinterpret_cast<PROC>(0x2) ||\
-			address == reinterpret_cast<PROC>(0x3) ||\
-			address == reinterpret_cast<PROC>(-1) ||\
-			address == reinterpret_cast<PROC>(0x0))\
-		{\
-			HMODULE glDLL = GetModuleHandleA("opengl32.dll");\
-			if (!glDLL)\
-				glDLL = LoadLibraryA("opengl32.dll");\
-			if(glDLL != nullptr)\
-				address = reinterpret_cast<PROC>(GetProcAddress(glDLL, #procName));\
-			\
-		}\
-		(procName) = reinterpret_cast<decltype(procName)>(address);\
-		if (!address)\
-			std::cout << std::format("[{}][GL] Failed to load {}\n", PROJECT_NAME, #procName);\
-	} while(0)
+#define GLLOAD(procName) Rupture::Graphics::GL::LoadGLFunction(procName, #procName);
 #endif
 
 namespace Rupture::Graphics::GL
 {
+	template<class Func>
+	void LoadGLFunction(Func& glFunc, const char* name)
+	{
+		PROC address = reinterpret_cast<PROC>(wglGetProcAddress(name));
+		if (address == reinterpret_cast<PROC>(0x1) || 
+			address == reinterpret_cast<PROC>(0x2) || 
+			address == reinterpret_cast<PROC>(0x3) || 
+			address == reinterpret_cast<PROC>(-1) || 
+			address == reinterpret_cast<PROC>(0x0))
+		{
+			HMODULE glDLL = GetModuleHandleA("opengl32.dll");
+			if (!glDLL)
+				glDLL = LoadLibraryA("opengl32.dll");
+				if (glDLL != nullptr)
+					address = reinterpret_cast<PROC>(GetProcAddress(glDLL, name));
+						
+		}
+			glFunc = reinterpret_cast<Func>(address);
+			if (!address)
+				std::cout << std::format("[{}][GL] Failed to load {}\n", PROJECT_NAME, name);
+	}
+
 	void LoadGL10()
 	{
 		GLLOAD(glCullFace);

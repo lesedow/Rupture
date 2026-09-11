@@ -831,7 +831,7 @@ namespace Rupture::Graphics::GL
 	using PFNGLISPROGRAMPROC = GLboolean(APIENTRYP) (GLuint program);
 	using PFNGLISSHADERPROC = GLboolean(APIENTRYP ) (GLuint shader);
 	using PFNGLLINKPROGRAMPROC = void(APIENTRYP) (GLuint program);
-	using PFNGLSHADERSOURCEPROC = void(APIENTRYP) (GLuint shader, GLsizei count, const GLchar* const* string, const GLint* length);
+	using PFNGLSHADERSOURCEPROC = void(APIENTRYP) (GLuint shader, GLsizei count, const GLchar** string, const GLint* length);
 	using PFNGLUSEPROGRAMPROC = void(APIENTRYP) (GLuint program);
 	using PFNGLUNIFORM1FPROC = void(APIENTRYP) (GLint location, GLfloat v0);
 	using PFNGLUNIFORM2FPROC = void(APIENTRYP) (GLint location, GLfloat v0, GLfloat v1);
