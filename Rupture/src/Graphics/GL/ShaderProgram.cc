@@ -1,5 +1,10 @@
 #include "Graphics/GL/ShaderProgram.hh"
-#include "Utils/Logger.hh"
+
+#include "Utils/Logging/Logger.hh"
+#include "Utils/GL/GLError.hh"
+
+#include "Utils/Macros/GLMacros.hh"
+#include "Utils/Macros/LoggerMacros.hh"
 
 namespace Rupture::Graphics::GL
 {
@@ -34,7 +39,7 @@ namespace Rupture::Graphics::GL
 
 			RUPTURE_GL_CALL(glGetShaderInfoLog(id, length, nullptr, message.data()));
 
-			RUPTURE_LOG_ERROR(message);
+			//RUPTURE_LOG_ERROR(message);
 		};
 	}
 

@@ -1,19 +1,17 @@
 #pragma once 
 
 #include <windows.h>
-#include <any>
 
 #include "Graphics/GL/GLTypes.hh"
-#include "Utils/Logger.hh"
+#include "Utils/Logging/Logger.hh"
 
-#ifndef GLLOAD
-#define GLLOAD(procName) Rupture::Graphics::GL::LoadGLFunction(procName, #procName);
-#endif
+#include "Utils/Macros/LoggerMacros.hh"
+#include "Utils/Macros/GLMacros.hh"
 
 namespace Rupture::Graphics::GL
 {
 	template<class Func>
-	void LoadGLFunction(Func& glFunc, const char* name)
+	inline void LoadGLFunction(Func& glFunc, const char* name)
 	{
 		PROC address = reinterpret_cast<PROC>(wglGetProcAddress(name));
 		if (address == reinterpret_cast<PROC>(0x1) || 
@@ -34,7 +32,7 @@ namespace Rupture::Graphics::GL
 				std::cout << std::format("[{}][GL] Failed to load {}\n", PROJECT_NAME, name);
 	}
 
-	void LoadGL10()
+	inline void LoadGL10()
 	{
 		GLLOAD(glCullFace);
 		GLLOAD(glFrontFace);
@@ -86,7 +84,7 @@ namespace Rupture::Graphics::GL
 		GLLOAD(glViewport);
 	}
 
-	void LoadGL11()
+	inline void LoadGL11()
 	{
 		GLLOAD(glDrawArrays);
 		GLLOAD(glDrawElements);
@@ -104,7 +102,7 @@ namespace Rupture::Graphics::GL
 		GLLOAD(glIsTexture);
 	}
 
-	void LoadGL12()
+	inline void LoadGL12()
 	{
 		GLLOAD(glDrawRangeElements);
 		GLLOAD(glTexImage3D);
@@ -112,7 +110,7 @@ namespace Rupture::Graphics::GL
 		GLLOAD(glCopyTexSubImage3D);
 	}
 
-	void LoadGL13()
+	inline void LoadGL13()
 	{
 		GLLOAD(glActiveTexture);
 		GLLOAD(glSampleCoverage);
@@ -125,7 +123,7 @@ namespace Rupture::Graphics::GL
 		GLLOAD(glGetCompressedTexImage);
 	}
 
-	void LoadGL14()
+	inline void LoadGL14()
 	{
 		GLLOAD(glBlendFuncSeparate);
 		GLLOAD(glMultiDrawArrays);
@@ -138,7 +136,7 @@ namespace Rupture::Graphics::GL
 		GLLOAD(glBlendEquation);
 	}
 
-	void LoadGL15()
+	inline void LoadGL15()
 	{
 		GLLOAD(glGenQueries);
 		GLLOAD(glDeleteQueries);
@@ -161,7 +159,7 @@ namespace Rupture::Graphics::GL
 		GLLOAD(glGetBufferPointerv);
 	}
 
-	void LoadGL20()
+	inline void LoadGL20()
 	{
 		GLLOAD(glBlendEquationSeparate);
 		GLLOAD(glDrawBuffers);
@@ -258,7 +256,7 @@ namespace Rupture::Graphics::GL
 		GLLOAD(glVertexAttribPointer);
 	}
 
-	void LoadGL21()
+	inline void LoadGL21()
 	{
 		GLLOAD(glUniformMatrix2x3fv);
 		GLLOAD(glUniformMatrix3x2fv);
@@ -268,7 +266,7 @@ namespace Rupture::Graphics::GL
 		GLLOAD(glUniformMatrix4x3fv);
 	}
 
-	void LoadGL30()
+	inline void LoadGL30()
 	{
 		GLLOAD(glColorMaski);
 		GLLOAD(glGetBooleani_v);
@@ -356,7 +354,7 @@ namespace Rupture::Graphics::GL
 		GLLOAD(glIsVertexArray);
 	}
 
-	void LoadGL31()
+	inline void LoadGL31()
 	{
 		GLLOAD(glDrawArraysInstanced);
 		GLLOAD(glDrawElementsInstanced);
@@ -372,7 +370,7 @@ namespace Rupture::Graphics::GL
 		GLLOAD(glUniformBlockBinding);
 	}
 
-	void LoadGL32()
+	inline void LoadGL32()
 	{
 		GLLOAD(glDrawElementsBaseVertex);
 		GLLOAD(glDrawRangeElementsBaseVertex);
@@ -395,7 +393,7 @@ namespace Rupture::Graphics::GL
 		GLLOAD(glSampleMaski);
 	}
 
-	void LoadGL33()
+	inline void LoadGL33()
 	{
 		GLLOAD(glBindFragDataLocationIndexed);
 		GLLOAD(glGetFragDataIndex);
@@ -427,7 +425,7 @@ namespace Rupture::Graphics::GL
 		GLLOAD(glVertexAttribP4uiv);
 	}	
 
-	bool LoadGLMethods()
+	inline bool LoadGLMethods()
 	{
 		// Create a window as usual
 

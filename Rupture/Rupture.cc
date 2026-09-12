@@ -8,7 +8,10 @@
 
 #include "Graphics/GL/GLLoader.hh"
 #include "Graphics/GL/Texture2D.hh"
-#include "Utils/Logger.hh"
+
+#include "Utils/Macros/LoggerMacros.hh"
+#include "Utils/Macros/GLMacros.hh"
+#include "Utils/GL/GLError.hh"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -137,11 +140,16 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PWSTR lpCmdLine
 	wglMakeCurrent(deviceContext, glContext);
 
 	ShowWindow(window, cmdShow);
+	
+	std::string glVersion(reinterpret_cast<const char*>(gl::glGetString(gl::GL_VERSION)));
+	std::string glVendor(reinterpret_cast<const char*>(gl::glGetString(gl::GL_VENDOR)));
+	std::string glRenderer(reinterpret_cast<const char*>(gl::glGetString(gl::GL_RENDERER)));
+	std::string glGlsl(reinterpret_cast<const char*>(gl::glGetString(gl::GL_SHADING_LANGUAGE_VERSION)));
 
-	std::cout << "[Rupture][GL] Running GL VER " << gl::glGetString(gl::GL_VERSION) << "\n";
-	std::cout << "[Rupture][GL] Vendor: " << gl::glGetString(gl::GL_VENDOR) << "\n";
-	std::cout << "[Rupture][GL] Renderer: " << gl::glGetString(gl::GL_RENDERER) << "\n";
-	std::cout << "[Rupture][GL] GLSL VER: " << gl::glGetString(gl::GL_SHADING_LANGUAGE_VERSION) << "\n";
+	RUPTURE_LOG_INFO(std::format("Running GL Version: {}", glVersion));
+	RUPTURE_LOG_INFO(std::format("Vendor: {}", glVendor));
+	RUPTURE_LOG_INFO(std::format("Renderer: {}", glRenderer));
+	RUPTURE_LOG_INFO(std::format("GLSL Version: {}", glGlsl));
 
 	MSG message{};
 	bool running = true;
@@ -196,7 +204,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PWSTR lpCmdLine
 		"\n"
 		"layout (location = 0) in vec3 aPos;\n"
 		"layout (location = 1) in vec2 aTexCoord;\n"
-		"uniform mat4 view;\n"
+		"uniform mat4 view\n"
 		"uniform mat4 projection;\n"
 		"uniform mat4 model;\n"
 		"out vec2 TexCoord;\n"
@@ -279,7 +287,7 @@ gl::GLuint CompileShader(GLenum type, const std::string& source)
 
 		RUPTURE_GL_CALL(gl::glGetShaderInfoLog(id, length, nullptr, message.data()));
 
-		std::cout << "Failed to compile shader: " << message << "\n";
+		RUPTURE_LOG_FATAL(std::format("Failed to compile shader: {}", message));
 	};
 
 	return id;
@@ -310,9 +318,8 @@ gl::GLint CreateShader(const std::string& fragment, const std::string& vertex)
 		std::string message{};
 		message.resize(length);
 		
-		RUPTURE_GL_CALL(gl::glGetShaderInfoLog(program, length, nullptr, message.data()));
-
-		std::cout << "Failed to link program: " << message << "\n";
+		RUPTURE_GL_CALL(gl::glGetProgramInfoLog(program, length, nullptr, message.data()));
+		RUPTURE_LOG_FATAL(std::format("Failed to link shader program: {}", message));
 	}
 
 	RUPTURE_GL_CALL(gl::glValidateProgram(program));
