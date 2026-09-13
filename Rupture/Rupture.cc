@@ -8,6 +8,7 @@
 
 #include "Graphics/GL/GLLoader.hh"
 #include "Graphics/GL/Texture2D.hh"
+#include "Graphics/GL/ShaderProgram.hh"
 
 #include "Utils/Macros/LoggerMacros.hh"
 #include "Utils/Macros/GLMacros.hh"
@@ -50,7 +51,61 @@ struct Vertex
 	glm::vec3 position;
 	glm::vec4 color;
 	glm::vec2 texCoords;
-	float texId;
+	int texId;
+};
+
+struct Region
+{
+	float x, y;
+	float width, height;
+};
+
+struct Animation
+{
+	int fps{};
+	int currentFrameIndex{};
+	std::vector<Region> regions{};
+	void UpdateFrame();
+};
+
+struct AnimatedSprite
+{
+	Rupture::Graphics::GL::Texture2D texture;
+	std::unordered_map<std::string, Animation> animations;
+	
+	explicit AnimatedSprite(Rupture::Graphics::GL::Texture2D texture) :texture(texture), animations{} {}
+
+	// Assuming each animation frame is placed horizontally
+	// And each animation is basically one row
+	static std::vector<Animation> AutoCreateAnimations(glm::vec2 textureSize, glm::vec2 frameSize, int fps)
+	{
+		std::vector<Animation> animations;
+		int totalFrames = textureSize.x / frameSize.x;
+		int totalAnimations = textureSize.y / frameSize.y;
+		
+		for (int animation = 0; animation < totalAnimations; animation++)
+		{
+			Animation anim;
+			anim.fps = fps;
+
+			for (int frame = 0; frame < totalFrames; frame++)
+			{
+				Region frameRegion
+				{
+					.x = (frame * frameSize.x) / textureSize.x,
+					.y = 1.0f - (animation * frameSize.y) / textureSize.y,
+					.width =  frameRegion.x + frameSize.x / textureSize.x,
+					.height = frameRegion.y - frameSize.y / textureSize.y,
+				};
+
+				anim.regions.push_back(frameRegion);
+			}
+
+			animations.push_back(anim);
+		}
+
+		return animations;
+	}
 };
 
 constexpr int SCREEN_W = 1280;
@@ -58,8 +113,6 @@ constexpr int SCREEN_H = 720;
 
 LRESULT CALLBACK WindowProc(HWND windowHandle, UINT message, WPARAM wParam, LPARAM lParam);
 bool HandleWindowCreation(HWND windowHandle);
-gl::GLint CreateShader(const std::string& fragment, const std::string& vertex);
-gl::GLuint CompileShader(gl::GLenum type, const std::string& source);
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PWSTR lpCmdLine, int cmdShow)
 {
@@ -141,6 +194,11 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PWSTR lpCmdLine
 
 	ShowWindow(window, cmdShow);
 	
+	// SPRITE BATCH
+	// - Place sprite data in a vertex buffer
+	// ...
+
+
 	std::string glVersion(reinterpret_cast<const char*>(gl::glGetString(gl::GL_VERSION)));
 	std::string glVendor(reinterpret_cast<const char*>(gl::glGetString(gl::GL_VENDOR)));
 	std::string glRenderer(reinterpret_cast<const char*>(gl::glGetString(gl::GL_RENDERER)));
@@ -154,22 +212,30 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PWSTR lpCmdLine
 	MSG message{};
 	bool running = true;
 
-	///////
-
-	//stbi_set_flip_vertically_on_load(true);
+	stbi_set_flip_vertically_on_load(true);
 
 	#pragma region TEXTURES
 	
 	gl::Texture2D redTexture{ "assets/red_normal.png" };
 	redTexture.Bind(gl::GL_TEXTURE0);
 
+	std::vector<Animation> animations = AnimatedSprite::AutoCreateAnimations(
+		redTexture.GetSize(), glm::vec2(16, 32), 8
+	);
+
+	Animation& walkUp = animations[0];
+	Region& frame = walkUp.regions[3];
+
+	RUPTURE_LOG_INFO(std::format("x: {}, y: {}, w: {}, h: {}\n", frame.x, frame.y, frame.width, frame.height));
+
+
 	#pragma endregion TEXTURES
 
-	float vertices[] = {
-		0.5f, 0.5f, 0.0f, 0.25f, 1.0f,
-		-0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
-		-0.5f, -0.5f, 0.0f, 0.0f, 0.75f,
-		0.5f, -0.5f, 0.0f, 0.25f, 0.75f
+	Vertex vertices[] = {	
+		{glm::vec3(0.5f, 0.5f, 0.0f), glm::vec4(1.0f), glm::vec2(frame.width, frame.y), 0},
+		{glm::vec3(-0.5f, 0.5f, 0.0f), glm::vec4(1.0f), glm::vec2(frame.x, frame.y), 0},
+		{glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec4(1.0f), glm::vec2(frame.x, frame.height), 0},
+		{glm::vec3(0.5f, -0.5f, 0.0f), glm::vec4(1.0f), glm::vec2(frame.width, frame.height), 0},
 	};
 
 	uint32_t indices[]
@@ -195,39 +261,21 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PWSTR lpCmdLine
 
 	RUPTURE_GL_CALL(gl::glEnableVertexAttribArray(0));
 	RUPTURE_GL_CALL(gl::glEnableVertexAttribArray(1));
+	RUPTURE_GL_CALL(gl::glEnableVertexAttribArray(2));
+	RUPTURE_GL_CALL(gl::glEnableVertexAttribArray(3));
 
-	RUPTURE_GL_CALL(gl::glVertexAttribPointer(0, 3, gl::GL_FLOAT, gl::GL_FALSE, sizeof(float) * 5, 0));
-	RUPTURE_GL_CALL(gl::glVertexAttribPointer(1, 2, gl::GL_FLOAT, gl::GL_FALSE, sizeof(float) * 5, (void*)(sizeof(float)*3)));
-
-	std::string vertexShader =
-		"#version 330 core\n"
-		"\n"
-		"layout (location = 0) in vec3 aPos;\n"
-		"layout (location = 1) in vec2 aTexCoord;\n"
-		"uniform mat4 view\n"
-		"uniform mat4 projection;\n"
-		"uniform mat4 model;\n"
-		"out vec2 TexCoord;\n"
-		"void main()\n"
-		"{\n"
-		"	gl_Position = projection * view * model * vec4(aPos, 1.0);\n"
-		"	TexCoord = aTexCoord;\n"
-		"}\n";
-
-	std::string fragmentShader =
-		"#version 330 core \n"
-		"out vec4 FragColor;\n"
-		"in vec2 TexCoord;\n"
-		"uniform sampler2D oTex;\n"
-		"void main()\n"
-		"{\n"
-		"	FragColor = texture(oTex, TexCoord);\n"
-		"}\n";
+	RUPTURE_GL_CALL(gl::glVertexAttribPointer(0, 3, gl::GL_FLOAT, gl::GL_FALSE, sizeof(Vertex), reinterpret_cast<const void*>(offsetof(Vertex, position))));
+	RUPTURE_GL_CALL(gl::glVertexAttribPointer(1, 4, gl::GL_FLOAT, gl::GL_FALSE, sizeof(Vertex), reinterpret_cast<const void*>(offsetof(Vertex, color))));
+	RUPTURE_GL_CALL(gl::glVertexAttribPointer(2, 2, gl::GL_FLOAT, gl::GL_FALSE, sizeof(Vertex), reinterpret_cast<const void*>(offsetof(Vertex, texCoords))));
+	RUPTURE_GL_CALL(gl::glVertexAttribIPointer(3, 1, gl::GL_INT, sizeof(Vertex), reinterpret_cast<const void*>(offsetof(Vertex, texId))));
 
 	RUPTURE_GL_CALL(gl::glEnable(gl::GL_DEPTH_TEST));
 
-	gl::GLint program = CreateShader(fragmentShader, vertexShader);
-	RUPTURE_GL_CALL(gl::glUseProgram(program));
+	Rupture::Graphics::GL::ShaderProgram shaderProgram{};
+	shaderProgram.CompileShader(gl::GL_VERTEX_SHADER, "assets/default_vert.glsl");
+	shaderProgram.CompileShader(gl::GL_FRAGMENT_SHADER, "assets/default_frag.glsl");
+	shaderProgram.LinkProgram();
+	shaderProgram.UseProgram();
 
 	glm::mat4 view = glm::mat4(1.0f);
 	glm::mat4 model = glm::mat4(1.0f);
@@ -235,13 +283,12 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PWSTR lpCmdLine
 	model = glm::translate(model, glm::vec3(1280.0f/2, 720.0f/2, 0.0f));
 	model = glm::scale(model, glm::vec3(64.0f, 128.0f, 1.0f));
 
-	glm::mat4 projection = glm::ortho(0.0f, 1280.0f, 720.0f, 0.0f, -1.0f, 1.0f);
+	glm::mat4 projection = glm::ortho(0.0f, 1280.0f, 0.0f, 720.0f, -1.0f, 1.0f);
 
-	RUPTURE_GL_CALL(gl::glUniformMatrix4fv(gl::glGetUniformLocation(program, "view"), 1, gl::GL_FALSE, glm::value_ptr(view)));
-	RUPTURE_GL_CALL(gl::glUniformMatrix4fv(gl::glGetUniformLocation(program, "projection"), 1, gl::GL_FALSE, glm::value_ptr(projection)));
-	RUPTURE_GL_CALL(gl::glUniformMatrix4fv(gl::glGetUniformLocation(program, "model"), 1, gl::GL_FALSE, glm::value_ptr(model)));
-
-	RUPTURE_GL_CALL(gl::glUniform1i(gl::glGetUniformLocation(program, "oTex"), 0));
+	shaderProgram.SetUniformMatrix4("view", 1, gl::GL_FALSE, glm::value_ptr(view));
+	shaderProgram.SetUniformMatrix4("projection", 1, gl::GL_FALSE, glm::value_ptr(projection));
+	shaderProgram.SetUniformMatrix4("model", 1, gl::GL_FALSE, glm::value_ptr(model));
+	shaderProgram.SetUniform1i("oTex", 0);
 
 	while (running)
 	{
@@ -264,71 +311,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PWSTR lpCmdLine
 
 	return 0;
 }
-
-gl::GLuint CompileShader(GLenum type, const std::string& source)
-{
-	gl::GLuint id{};
-	RUPTURE_GL_CALL(id = gl::glCreateShader(type));
-	const char* src = source.c_str();
-
-	RUPTURE_GL_CALL(gl::glShaderSource(id, 1, &src, nullptr));
-	RUPTURE_GL_CALL(gl::glCompileShader(id));
-
-	gl::GLint result{};
-	RUPTURE_GL_CALL(gl::glGetShaderiv(id, gl::GL_COMPILE_STATUS, &result));
-
-	if (result == gl::GL_FALSE) {
-		gl::GLint length{};
-
-		RUPTURE_GL_CALL(gl::glGetShaderiv(id, gl::GL_INFO_LOG_LENGTH, &length));
-
-		std::string message{};
-		message.resize(length);
-
-		RUPTURE_GL_CALL(gl::glGetShaderInfoLog(id, length, nullptr, message.data()));
-
-		RUPTURE_LOG_FATAL(std::format("Failed to compile shader: {}", message));
-	};
-
-	return id;
-}
-
-gl::GLint CreateShader(const std::string& fragment, const std::string& vertex)
-{
-	gl::GLuint program{};
-	RUPTURE_GL_CALL(program = gl::glCreateProgram());
-
-	gl::GLuint vertexShader{ CompileShader(gl::GL_VERTEX_SHADER, vertex) };
-	gl::GLuint fragmentShader{ CompileShader(gl::GL_FRAGMENT_SHADER, fragment)};
-
-	RUPTURE_GL_CALL(gl::glAttachShader(program, vertexShader));
-	RUPTURE_GL_CALL(gl::glAttachShader(program, fragmentShader));
-
-	RUPTURE_GL_CALL(gl::glLinkProgram(program));
-
-	gl::GLint status{};
-	RUPTURE_GL_CALL(gl::glGetProgramiv(program, gl::GL_LINK_STATUS, &status));
-
-	if (status == gl::GL_FALSE)
-	{
-		gl::GLint length{};
-
-		RUPTURE_GL_CALL(gl::glGetProgramiv(program, gl::GL_INFO_LOG_LENGTH, &length));
-
-		std::string message{};
-		message.resize(length);
-		
-		RUPTURE_GL_CALL(gl::glGetProgramInfoLog(program, length, nullptr, message.data()));
-		RUPTURE_LOG_FATAL(std::format("Failed to link shader program: {}", message));
-	}
-
-	RUPTURE_GL_CALL(gl::glValidateProgram(program));
-	RUPTURE_GL_CALL(gl::glDeleteShader(vertexShader));
-	RUPTURE_GL_CALL(gl::glDeleteShader(fragmentShader));
-
-	return program;
-}
-
 
 LRESULT CALLBACK WindowProc(HWND windowHandle, UINT message, WPARAM wParam, LPARAM lParam)
 {

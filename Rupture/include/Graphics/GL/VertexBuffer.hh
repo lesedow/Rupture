@@ -11,6 +11,6 @@ namespace Rupture::Graphics::GL
 		GLenum type_;
 	public:
 		VertexBuffer(GLenum type);
-		void SetData(GLsizeiptr size, const GLVoid* data, GLenum usage)
+		void SetData(GLsizeiptr size, const GLvoid* data, GLenum usage)
 	};
 }	

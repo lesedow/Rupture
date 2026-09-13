@@ -17,11 +17,11 @@ namespace Rupture::Graphics::GL
 
 		if (!imageData) RUPTURE_LOG_FATAL(std::format("Failed to load image: {}", path));
 
-		size = glm::vec2(width, height);
+		size_ = glm::vec2(width, height);
 		GLenum pixelFormat = channels == 4 ? GL_RGBA : GL_RGB;
 
-		RUPTURE_GL_CALL(glGenTextures(1, &id));
-		RUPTURE_GL_CALL(glBindTexture(GL_TEXTURE_2D, id));
+		RUPTURE_GL_CALL(glGenTextures(1, &id_));
+		RUPTURE_GL_CALL(glBindTexture(GL_TEXTURE_2D, id_));
 
 		RUPTURE_GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));
 		RUPTURE_GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
@@ -38,9 +38,14 @@ namespace Rupture::Graphics::GL
 		stbi_image_free(imageData);
 	}
 
+	glm::vec2 Texture2D::GetSize() const
+	{
+		return size_;
+	}
+
 	void Texture2D::Bind(GLenum slot)
 	{
 		RUPTURE_GL_CALL(glActiveTexture(slot));
-		RUPTURE_GL_CALL(glBindTexture(GL_TEXTURE_2D, id));
+		RUPTURE_GL_CALL(glBindTexture(GL_TEXTURE_2D, id_));
 	}
 }
