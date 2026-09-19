@@ -1,5 +1,6 @@
 #pragma once 
 
+#define UNICODE
 #include <windows.h>
 
 #include "Graphics/GL/GLTypes.hh"
@@ -20,9 +21,9 @@ namespace Rupture::Graphics::GL
 			address == reinterpret_cast<PROC>(-1) || 
 			address == reinterpret_cast<PROC>(0x0))
 		{
-			HMODULE glDLL = GetModuleHandleA("opengl32.dll");
+			HMODULE glDLL = GetModuleHandle(L"opengl32.dll");
 			if (!glDLL)
-				glDLL = LoadLibraryA("opengl32.dll");
+				glDLL = LoadLibrary(L"opengl32.dll");
 				if (glDLL != nullptr)
 					address = reinterpret_cast<PROC>(GetProcAddress(glDLL, name));
 						
