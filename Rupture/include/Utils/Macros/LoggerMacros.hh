@@ -1,5 +1,6 @@
 #pragma once
 
+#ifdef RUPTURE_DEBUG
 #ifndef RUPTUREASSERT 
 #define RUPTUREASSERT(condition, message)\
 	do {\
@@ -26,4 +27,5 @@
 #define RUPTURE_LOG_FATAL(message) \
 		Rupture::Utils::Logging::Logger::GetInstance() \
 			.LogFatal(message, Rupture::Utils::Logging::Logger::GL_MODULE);
+#endif
 #endif

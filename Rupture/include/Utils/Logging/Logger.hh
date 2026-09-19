@@ -18,7 +18,6 @@ namespace Rupture::Utils::Logging
 	public:
 		static constexpr std::string_view NAME			= "[RUPTURE]";
 		static constexpr std::string_view GL_MODULE		= "[GL]";
-		static constexpr std::string_view WIN32_MODULE	= "[WIN32]";
 		static constexpr std::string_view FATAL_LVL		= "[ERROR]";
 		static constexpr std::string_view INFO_LVL		= "[INFO]";
 		static constexpr std::string_view WARN_LVL		= "[WARN]";
