@@ -1,10 +1,5 @@
-﻿#ifndef UNICODE
-#define UNICODE
-#endif // !UNICODE
-
-#include <windows.h>
-#include <print>
-#include <iostream>
+﻿
+#include "Platform/Window.hh"
 
 #include "Graphics/GL/GLLoader.hh"
 #include "Graphics/GL/Texture2D.hh"
@@ -20,31 +15,13 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <print>
+#include <iostream>
 
 #pragma warning(push)
 #pragma warning(disable: 28251)
 
 namespace gl = Rupture::Graphics::GL;
-
-constexpr int attribList[]{
-	gl::WGL_DRAW_TO_WINDOW_ARB, gl::GL_TRUE,
-	gl::WGL_SUPPORT_OPENGL_ARB, gl::GL_TRUE,
-	gl::WGL_DOUBLE_BUFFER_ARB, gl::GL_TRUE,
-	gl::WGL_PIXEL_TYPE_ARB,  gl::WGL_TYPE_RGBA_ARB,
-	gl::WGL_COLOR_BITS_ARB, 32,
-	gl::WGL_DEPTH_BITS_ARB, 24,
-	gl::WGL_STENCIL_BITS_ARB, 8,
-	0
-};
-
-constexpr int ctxAttribList[]
-{
-	gl::WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
-	gl::WGL_CONTEXT_MINOR_VERSION_ARB, 3,
-	gl::WGL_CONTEXT_PROFILE_MASK_ARB,
-	gl::WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
-	0 
-};
 
 struct Vertex
 {
@@ -111,9 +88,6 @@ struct AnimatedSprite
 constexpr int SCREEN_W = 1280;
 constexpr int SCREEN_H = 720;
 
-LRESULT CALLBACK WindowProc(HWND windowHandle, UINT message, WPARAM wParam, LPARAM lParam);
-bool HandleWindowCreation(HWND windowHandle);
-
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PWSTR lpCmdLine, int cmdShow)
 {
 	// So apparently windows only has support for legacy GL 
@@ -138,66 +112,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PWSTR lpCmdLine
 		std::cout << "ERROR\n";
 	}
 
-	const std::wstring CLASS_NAME = L"OpenGLClass";
-
-	WNDCLASS windowClass{};
-
-	windowClass.lpfnWndProc = WindowProc;
-	windowClass.hInstance = hInstance;
-	windowClass.lpszClassName = CLASS_NAME.c_str();
-	windowClass.style = CS_VREDRAW | CS_HREDRAW | CS_OWNDC;
-
-	RegisterClass(&windowClass);
-
-	HWND window = CreateWindowEx(
-		0,
-		CLASS_NAME.c_str(),
-		L"OpenGL",
-		WS_OVERLAPPEDWINDOW,
-		CW_USEDEFAULT, CW_USEDEFAULT, SCREEN_W, SCREEN_H,
-		nullptr, nullptr, hInstance, nullptr
-	);
-
-	if (!window) return 0;
-
-	HDC deviceContext = GetDC(window);
-
-	UINT numberOfFormats{};
-	int pixelFormat{};
-
-	// This is irrelevant
-	PIXELFORMATDESCRIPTOR pixelFormatDescriptor{};
-
-	BOOL pixelFormatChosen = gl::wglChoosePixelFormatARB(deviceContext, attribList, nullptr, 1, &pixelFormat, &numberOfFormats);
-	if (!pixelFormatChosen)
-	{
-		std::cout << "Failed to choose pixel format ARB: " << GetLastError() << "\n";
-		return 0;
-	}
-
-	BOOL pixelFormatSet = SetPixelFormat(deviceContext, pixelFormat, &pixelFormatDescriptor);
-	if (!pixelFormatChosen)
-	{
-		std::cout << "Failed to set pixel format ARB: " << GetLastError() << "\n";
-		return 0;
-	}
-
-
-	HGLRC glContext = gl::wglCreateContextAttribsARB(deviceContext, nullptr, ctxAttribList);
-	if (!glContext)
-	{
-		std::cout << "Failed to create GL Context: " << GetLastError() << "\n";
-		return 0;
-	}
-
-	wglMakeCurrent(deviceContext, glContext);
-
-	ShowWindow(window, cmdShow);
-	
-	// SPRITE BATCH
-	// - Place sprite data in a vertex buffer
-	// ...
-
+	Rupture::Platform::Window ruptureWindow(glm::vec2(SCREEN_W, SCREEN_H), L"Rupture");
+	ruptureWindow.CreateGLContext();
 
 	std::string glVersion(reinterpret_cast<const char*>(gl::glGetString(gl::GL_VERSION)));
 	std::string glVendor(reinterpret_cast<const char*>(gl::glGetString(gl::GL_VENDOR)));
@@ -306,25 +222,10 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PWSTR lpCmdLine
 
 		RUPTURE_GL_CALL(gl::glDrawElements(gl::GL_TRIANGLES, 6, gl::GL_UNSIGNED_INT, nullptr));
 
-		SwapBuffers(deviceContext);
+		SwapBuffers(ruptureWindow.GetDeviceContext());
 	}
 
 	return 0;
-}
-
-LRESULT CALLBACK WindowProc(HWND windowHandle, UINT message, WPARAM wParam, LPARAM lParam)
-{
-	switch (message)
-	{
-	case WM_CLOSE:
-		DestroyWindow(windowHandle);
-		return 0;
-	case WM_DESTROY:
-		PostQuitMessage(0);
-		return 0;
-	default:
-		return DefWindowProc(windowHandle, message, wParam, lParam);
-	}
 }
 
 #pragma warning(pop)
