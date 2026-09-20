@@ -1,7 +1,9 @@
 #pragma once
 
-#ifndef RUPTUREASSERT 
-#define RUPTUREASSERT(condition, message)\
+#include "Utils/Logging/Logger.hh"
+
+#ifndef RP_ASSERT
+#define RP_ASSERT(condition, message)\
 	do {\
 		if (!(condition)){\
 			std::cout << std::format(\
@@ -12,18 +14,18 @@
 	} while (0)
 #endif
 
-#ifndef RUPTURE_LOG_INFO
-#define RUPTURE_LOG_INFO(message) \
+#ifndef RP_LOG_INFO
+#define RP_LOG_INFO(message) \
 		Rupture::Utils::Logging::Logger::GetInstance() \
 			.LogInfo(message, Rupture::Utils::Logging::Logger::GL_MODULE);
 #endif
-#ifndef RUPTURE_LOG_WARN
-#define RUPTURE_LOG_WARN(message) \
+#ifndef RP_LOG_WARN
+#define RP_LOG_WARN(message) \
 		Rupture::Utils::Logging::Logger::GetInstance() \
 			.LogWarn(message, Rupture::Utils::Logging::Logger::GL_MODULE);
 #endif
-#ifndef RUPTURE_LOG_FATAL
-#define RUPTURE_LOG_FATAL(message) \
+#ifndef RP_LOG_ERROR
+#define RP_LOG_ERROR(message) \
 		Rupture::Utils::Logging::Logger::GetInstance() \
-			.LogFatal(message, Rupture::Utils::Logging::Logger::GL_MODULE);
+			.LogError(message, Rupture::Utils::Logging::Logger::GL_MODULE);
 #endif
