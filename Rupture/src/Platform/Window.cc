@@ -20,14 +20,14 @@ namespace Rupture::Platform
 			SetLastError(ERROR_SUCCESS); 
 
 			LONG_PTR lPtr = SetWindowLongPtr(windowHandle, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(self));
-			RUPTURE_WIN32_CHECK(!lPtr);
+			RP_WIN64(!lPtr);
 
 			self->window_ = windowHandle;
 		}
 		else {
 			SetLastError(ERROR_SUCCESS);
 			LONG_PTR lPtr = GetWindowLongPtr(windowHandle, GWLP_USERDATA);
-			RUPTURE_WIN32_CHECK(!lPtr);
+			RP_WIN64(!lPtr);
 
 			self = reinterpret_cast<Window*>(lPtr);
 		}
@@ -46,7 +46,7 @@ namespace Rupture::Platform
 		const std::wstring CLASS_NAME = L"Rupture";
 
 		HINSTANCE instance{ GetModuleHandle(nullptr) };
-		RUPTURE_WIN32_CHECK(instance == nullptr);
+		RP_WIN64(instance == nullptr);
 
 		WNDCLASS windowClass{};
 		windowClass.lpfnWndProc = Window::WinProc;
@@ -55,7 +55,7 @@ namespace Rupture::Platform
 		windowClass.style = CS_VREDRAW | CS_HREDRAW | CS_OWNDC;
 
 		ATOM registeredClass{ RegisterClass(&windowClass) };
-		RUPTURE_WIN32_CHECK(registeredClass == 0);
+		RP_WIN64(registeredClass == 0);
 
 		window_ = CreateWindowEx(
 			WS_EX_OVERLAPPEDWINDOW,
@@ -66,7 +66,7 @@ namespace Rupture::Platform
 			nullptr, nullptr, instance, this
 		);
 
-		RUPTURE_WIN32_CHECK(!window_);
+		RP_WIN64(!window_);
 
 		ShowWindow(window_, SW_SHOWDEFAULT);
 	}
@@ -86,20 +86,20 @@ namespace Rupture::Platform
 			nullptr, 1, &pixelFormat,
 			&numberOfFormats
 			) };
-		RUPTURE_WIN32_CHECK(!pixelFormatChosen);
+		RP_WIN64(!pixelFormatChosen);
 			
 		BOOL pixelFormatSet{ SetPixelFormat(context_, pixelFormat, &pixelFormatDescriptor) };
-		RUPTURE_WIN32_CHECK(!pixelFormatSet);
+		RP_WIN64(!pixelFormatSet);
 
 		glContext_ = Rupture::Graphics::GL::wglCreateContextAttribsARB(
 			context_,
 			nullptr,
 			Rupture::Graphics::GL::CORE_3_3
 		);
-		RUPTURE_WIN32_CHECK(!glContext_);
+		RP_WIN64(!glContext_);
 
 		BOOL setContext = wglMakeCurrent(context_, glContext_);
-		RUPTURE_WIN32_CHECK(!setContext);
+		RP_WIN64(!setContext);
 	}
 
 	LRESULT Window::HandleMessages(UINT uMsg, WPARAM wParam, LPARAM lParam)
