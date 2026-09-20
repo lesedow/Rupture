@@ -39,7 +39,7 @@ namespace Rupture::Utils::Logging
 		void SetConsoleColor(LogColor color) const;
 		void LogInfo(std::string_view message, std::string_view module) const;
 		void LogWarn(std::string_view message, std::string_view module) const;
-		void LogFatal(std::string_view message, std::string_view module) const;
+		void LogError(std::string_view message, std::string_view module) const;
 		void Assert(bool condition, std::string_view message, std::string_view module) const;
 		std::string GetTimestamp() const;
 	};
