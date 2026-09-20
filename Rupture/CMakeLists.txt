@@ -12,17 +12,18 @@ target_include_directories(Rupture PRIVATE include)
 target_link_libraries(Rupture PRIVATE glm::glm)
 
 target_compile_definitions(Rupture PRIVATE 
-    WIN32_LEAN_AND_MEAN
-    NOMINMAX
 	PROJECT_NAME="${PROJECT_NAME}"
 	$<$<CONFIG:Debug>:RUPTURE_DEBUG>
 )
 
 target_sources(Rupture PRIVATE
-  src/Graphics/GL/Texture2D.cc
-  src/Graphics/GL/ShaderProgram.cc
-  src/Utils/Logger.cc
-  src/Platform/Window.cc
+    src/Graphics/GL/Texture2D.cc
+    src/Graphics/GL/ShaderProgram.cc
+    src/Graphics/GL/GLBuffer.cc
+    src/Graphics/GL/VertexArrayObject.cc
+    src/Utils/Logger.cc
+    src/Platform/Window.cc
+    src/Rendering/GLRenderer.cc
 )
 
 add_custom_command(TARGET Rupture POST_BUILD
