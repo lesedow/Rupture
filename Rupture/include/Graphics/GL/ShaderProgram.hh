@@ -27,6 +27,7 @@ namespace Rupture::Graphics::GL
 		std::string LoadShaderFromPath(const std::filesystem::path& path);
 	public:
 		ShaderProgram();
+		~ShaderProgram();
 
 		void CompileShader(GLenum type, const std::filesystem::path& path);
 		void LinkProgram();
