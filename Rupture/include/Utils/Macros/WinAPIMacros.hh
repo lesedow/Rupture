@@ -1,13 +1,13 @@
 #pragma once
 
-#if defined(_WIN32)
-#ifndef RUPTURE_WIN32_CHECK
-#define RUPTURE_WIN32_CHECK(failCondition) \
+#if defined(_WIN64)
+#ifndef RP_WIN64
+#define RP_WIN64(failCondition) \
 	do{\
 		DWORD errorID = GetLastError();\
 		if ((failCondition) && errorID != ERROR_SUCCESS){\
 			std::string formattedError = Utils::Platform::GetFormattedErrorMessage(errorID);\
-			RUPTURE_LOG_FATAL(formattedError);\
+			RP_LOG_ERROR(formattedError);\
 			__debugbreak();\
 		}\
 	}while(0)
