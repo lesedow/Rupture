@@ -32,7 +32,7 @@ namespace Rupture::Utils::Logging
 		Log(message, module, WARN_LVL, LogColor::WARN_COLOR, std::cout);
 	}
 
-	void Logger::LogFatal(std::string_view message, std::string_view module) const
+	void Logger::LogError(std::string_view message, std::string_view module) const
 	{
 		Log(message, module, FATAL_LVL, LogColor::FATAL_COLOR, std::cerr);
 	}
