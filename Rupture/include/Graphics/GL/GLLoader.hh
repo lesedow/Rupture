@@ -4,9 +4,6 @@
 #include <windows.h>
 
 #include "Graphics/GL/GLTypes.hh"
-#include "Utils/Logging/Logger.hh"
-
-#include "Utils/Macros/LoggerMacros.hh"
 #include "Utils/Macros/GLMacros.hh"
 
 namespace Rupture::Graphics::GL
@@ -30,7 +27,7 @@ namespace Rupture::Graphics::GL
 		}
 			glFunc = reinterpret_cast<Func>(address);
 			if (!address)
-				std::cout << std::format("[{}][GL] Failed to load {}\n", PROJECT_NAME, name);
+				RP_LOG_ERROR(std::format("Failed to load {}", name));
 	}
 
 	inline void LoadGL10()
