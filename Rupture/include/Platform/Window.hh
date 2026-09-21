@@ -1,26 +1,6 @@
 #pragma once
 
-#if defined(_WIN64)
-
-#ifndef UNICODE
-#define UNICODE
-#endif
-
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif
-
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
-
-#include <windows.h>
-
-#endif
-
-#include <glm/glm.hpp>
-#include <string_view>
-#include <string>
+#include "Precompiled.hh"
 
 namespace Rupture::Platform
 {

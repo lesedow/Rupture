@@ -8,6 +8,7 @@ add_executable (Rupture WIN32 "Rupture.cc")
 add_subdirectory(external/glm)
 
 target_include_directories(Rupture PRIVATE include)
+target_precompile_headers(Rupture PRIVATE include/Precompiled.hh)
 
 target_link_libraries(Rupture PRIVATE glm::glm)
 
@@ -24,6 +25,7 @@ target_sources(Rupture PRIVATE
     src/Utils/Logger.cc
     src/Platform/Window.cc
     src/Rendering/GLRenderer.cc
+    src/Utils/StbImgImpl.cc
 )
 
 add_custom_command(TARGET Rupture POST_BUILD
@@ -32,8 +34,6 @@ add_custom_command(TARGET Rupture POST_BUILD
         "$<TARGET_FILE_DIR:Rupture>/assets"	
 )
 
-if (CMAKE_VERSION VERSION_GREATER 3.12)
-  set_property(TARGET Rupture PROPERTY CXX_STANDARD 23)
-endif()
+set_property(TARGET Rupture PROPERTY CXX_STANDARD 23)
 
 # TODO: Add tests and install targets if needed.

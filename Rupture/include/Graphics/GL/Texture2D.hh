@@ -1,9 +1,7 @@
 #pragma once
 
+#include "Precompiled.hh"
 #include "GLTypes.hh"
-
-#include <glm/glm.hpp>
-#include <string>
 
 namespace Rupture::Graphics::GL
 {

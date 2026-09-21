@@ -1,14 +1,13 @@
 #pragma once
 
-#ifndef GLLOAD
-#define GLLOAD(procName) Rupture::Graphics::GL::LoadGLFunction(procName, #procName);
-#endif
-
-#include <string>
-#include <format>
+#include "Precompiled.hh"
 
 #include "Utils/GL/GLError.hh"
 #include "Utils/Macros/LoggerMacros.hh"
+
+#ifndef GLLOAD
+#define GLLOAD(procName) Rupture::Graphics::GL::LoadGLFunction(procName, #procName);
+#endif
 
 #ifndef RP_GL
 #define RP_GL(statement) \

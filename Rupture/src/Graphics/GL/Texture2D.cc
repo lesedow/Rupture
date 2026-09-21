@@ -1,3 +1,4 @@
+#include "Precompiled.hh"
 #include "Graphics/GL/Texture2D.hh"
 
 #include "Utils/Macros/LoggerMacros.hh"
@@ -5,8 +6,6 @@
 
 #include "Utils/Logging/Logger.hh"
 #include "Utils/GL/GLError.hh"
-
-#include "stb_image.h"
 
 namespace Rupture::Graphics::GL
 {

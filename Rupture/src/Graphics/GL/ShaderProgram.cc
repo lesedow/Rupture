@@ -1,3 +1,4 @@
+#include "Precompiled.hh"
 #include "Graphics/GL/ShaderProgram.hh"
 
 #include "Utils/Logging/Logger.hh"
@@ -5,9 +6,6 @@
 
 #include "Utils/Macros/GLMacros.hh"
 #include "Utils/Macros/LoggerMacros.hh"
-
-#include <fstream>
-#include <sstream>
 
 namespace Rupture::Graphics::GL
 {

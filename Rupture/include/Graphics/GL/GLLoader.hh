@@ -1,7 +1,6 @@
 #pragma once 
 
-#define UNICODE
-#include <windows.h>
+#include "Precompiled.hh"
 
 #include "Graphics/GL/GLTypes.hh"
 #include "Utils/Macros/GLMacros.hh"

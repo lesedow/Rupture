@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Precompiled.hh"
+
 #if defined(_WIN64)
 #ifndef RP_WIN64
 #define RP_WIN64(failCondition) \

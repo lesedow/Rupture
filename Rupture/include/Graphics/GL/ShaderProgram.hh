@@ -1,12 +1,7 @@
 #pragma once
 
+#include "Precompiled.hh"
 #include "GLTypes.hh"
-
-#include <vector>
-#include <unordered_map>
-#include <string>
-#include <filesystem>
-#include <concepts>
 
 namespace Rupture::Graphics::GL
 {

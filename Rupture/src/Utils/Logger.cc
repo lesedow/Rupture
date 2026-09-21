@@ -1,5 +1,4 @@
-#include <chrono>
-
+#include "Precompiled.hh"
 #include "Utils/Logging/Logger.hh"
 
 namespace Rupture::Utils::Logging

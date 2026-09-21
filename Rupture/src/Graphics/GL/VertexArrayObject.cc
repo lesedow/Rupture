@@ -1,3 +1,4 @@
+#include "Precompiled.hh"
 #include "Graphics/GL/VertexArrayObject.hh"
 #include "Utils/Macros/GLMacros.hh"
 

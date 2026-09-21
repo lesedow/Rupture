@@ -1,8 +1,6 @@
 #pragma once
 
-#include <iostream>
-#include <string_view>
-#include <windows.h>
+#include "Precompiled.hh"
 
 namespace Rupture::Utils::Logging
 {
