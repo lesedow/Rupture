@@ -1,8 +1,6 @@
+#include "Precompiled.hh"
 #include "Rendering/GLRenderer.hh"
 #include "Utils/Macros/GLMacros.hh"
-
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 
 namespace Rupture::Rendering
 {
@@ -15,6 +13,9 @@ namespace Rupture::Rendering
 		ShaderProgram_(),
 		QuadCount_()
 	{
+
+		Vertices_.reserve(GLRenderer::BATCH_CAPACITY);
+		
 		// Bind the buffers
 		VertexArrayObject_.Bind();
 		VertexBufferObject_.Bind();
@@ -22,7 +23,7 @@ namespace Rupture::Rendering
 
 		// Load shaders
 		ShaderProgram_.CompileShader(Graphics::GL::GL_VERTEX_SHADER, "assets/default_vert.glsl");
-		ShaderProgram_.CompileShader(Graphics::GL::GL_VERTEX_SHADER, "assets/default_frag.glsl");
+		ShaderProgram_.CompileShader(Graphics::GL::GL_FRAGMENT_SHADER, "assets/default_frag.glsl");
 		ShaderProgram_.LinkProgram();
 
 		// Allocate enough memory for BATCH_CAPCITY
