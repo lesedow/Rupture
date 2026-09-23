@@ -24,6 +24,7 @@
 #include <print>
 #include <cstdint>
 #include <vector>
+#include <array>
 #include <unordered_map>
 #include <string>
 #include <string_view>

@@ -27,21 +27,22 @@ namespace Rupture::Rendering
 		static constexpr Graphics::GL::GLint MAX_INDICES			= MAX_QUADS * INDICES_PER_QUAD;
 		static constexpr Graphics::GL::GLint MAX_ACTIVE_TEXTURES	= 32;
 	private:
-		std::vector<Vertex> Vertices_;
+		std::vector<glm::mat3> ModelMatrices_;
 		std::vector<std::uint32_t> Indices_;
-
 		Graphics::GL::VertexArrayObject VertexArrayObject_;
 		Graphics::GL::GLBuffer VertexBufferObject_;
 		Graphics::GL::GLBuffer ElementBufferObject_;
-
 		Graphics::GL::ShaderProgram ShaderProgram_;
-
 		Graphics::GL::GLuint QuadCount_;
+		glm::vec2 ViewportSize_;
 		glm::mat4 ProjectionMatrix_;
+		glm::mat4 ViewMatrix_;
+
+		Graphics::GL::Texture2D WhiteTexture_;
 	private:
 		void GenIndices();
 	public:
-		GLRenderer();
+		GLRenderer(glm::vec2 viewportSize);
 		~GLRenderer();
 	public:
 		void StartBatch();
