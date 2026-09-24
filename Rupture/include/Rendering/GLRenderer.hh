@@ -30,7 +30,8 @@ namespace Rupture::Rendering
 		std::vector<glm::mat3> ModelMatrices_;
 		std::vector<std::uint32_t> Indices_;
 		Graphics::GL::VertexArrayObject VertexArrayObject_;
-		Graphics::GL::GLBuffer VertexBufferObject_;
+		Graphics::GL::GLBuffer FixedVertexData_;
+		Graphics::GL::GLBuffer PerInstanceData_;
 		Graphics::GL::GLBuffer ElementBufferObject_;
 		Graphics::GL::ShaderProgram ShaderProgram_;
 		Graphics::GL::GLuint QuadCount_;
@@ -42,7 +43,7 @@ namespace Rupture::Rendering
 	private:
 		void GenIndices();
 	public:
-		GLRenderer(glm::vec2 viewportSize);
+		explicit GLRenderer(glm::vec2 viewportSize);
 		~GLRenderer();
 	public:
 		void StartBatch();

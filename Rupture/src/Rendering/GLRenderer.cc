@@ -5,24 +5,18 @@
 namespace Rupture::Rendering
 {
 	GLRenderer::GLRenderer(glm::vec2 viewportSize)
-		:ModelMatrices_(),
-		Indices_(),
-		VertexArrayObject_(),
-		VertexBufferObject_(Graphics::GL::GL_ARRAY_BUFFER),
+		:FixedVertexData_(Graphics::GL::GL_ARRAY_BUFFER),
+		PerInstanceData_(Graphics::GL::GL_ARRAY_BUFFER),
 		ElementBufferObject_(Graphics::GL::GL_ELEMENT_ARRAY_BUFFER),
-		ShaderProgram_(),
-		QuadCount_(),
 		ViewportSize_(viewportSize),
 		ViewMatrix_(1.0f),
-		WhiteTexture_()
+		ProjectionMatrix_(glm::ortho(0.0f, ViewportSize_.x, ViewportSize_.y, 0.0f))
 	{
-		ProjectionMatrix_ = glm::ortho(0.0f, ViewportSize_.x, ViewportSize_.y, 0.0f);
-		
 		ModelMatrices_.reserve(GLRenderer::MAX_QUADS);
 		
 		// Bind the buffers
 		VertexArrayObject_.Bind();
-		VertexBufferObject_.Bind();
+		FixedVertexData_.Bind();
 		ElementBufferObject_.Bind();
 
 		WhiteTexture_.Bind(Graphics::GL::GL_TEXTURE0);
@@ -33,9 +27,10 @@ namespace Rupture::Rendering
 		ShaderProgram_.LinkProgram();
 		ShaderProgram_.UseProgram();
 
-		ShaderProgram_.SetUniformMatrix4("Projection", 1, Graphics::GL::GL_FALSE, glm::value_ptr(ProjectionMatrix_));
-		ShaderProgram_.SetUniformMatrix4("View", 1, Graphics::GL::GL_FALSE, glm::value_ptr(ViewMatrix_));
-		ShaderProgram_.SetUniform1i("OutTexture", 0);
+		ShaderProgram_.SetUniformMatrix4("m_Projection", 1, Graphics::GL::GL_FALSE, glm::value_ptr(ProjectionMatrix_));
+		ShaderProgram_.SetUniformMatrix4("m_View", 1, Graphics::GL::GL_FALSE, glm::value_ptr(ViewMatrix_));
+	
+		ShaderProgram_.SetUniform("OutTexture", 0);
 
 		// Allocate enough memory for BATCH_CAPCITY
 		VertexBufferObject_.AllocateData(GLRenderer::BATCH_CAPACITY * sizeof(Vertex));
