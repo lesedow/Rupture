@@ -5,27 +5,28 @@
 namespace Rupture::Graphics::GL
 {
 	using GLvoid		= void;
-	using GLenum		= std::uint32_t;
+	using GLenum		= uint32_t;
 	using GLfloat		= float;
-	using GLint			= std::int32_t;
-	using GLsizei		= std::int32_t;
-	using GLbitfield	= std::uint32_t;
+	using GLint			= int32_t;
+	using GLsizei		= int32_t;
+	using GLbitfield	= uint32_t;
 	using GLdouble		= double;
-	using GLuint		= std::uint32_t;
-	using GLboolean		= std::uint8_t;
-	using GLubyte		= std::uint8_t;
+	using GLuint		= uint32_t;
+	using GLboolean		= uint8_t;
+	using GLubyte		= uint8_t;
 	using GLclampf		= float;
 	using GLclampd		= double;
-	using GLsizeiptr	= std::intptr_t;
-	using GLintptr		= std::intptr_t;
+	using GLsizeiptr	= intptr_t;
+	using GLintptr		= intptr_t;
 	using GLchar		= char;
-	using GLshort		= std::int16_t;
-	using GLbyte		= std::uint8_t;
-	using GLushort		= std::uint16_t;
-	using GLhalf		= std::uint16_t;
+	using GLshort		= int16_t;
+	using GLbyte		= uint8_t;
+	using GLushort		= uint16_t;
+	using GLhalf		= uint16_t;
 	using GLsync		= struct __GLsync*;
-	using GLuint64		= std::uint64_t;
-	using GLint64		= std::int64_t;
+	using GLuint64		= uint64_t;
+	using GLuint64EXT	= uint64_t;
+	using GLint64		= int64_t;
 
 	constexpr GLint GL_DEPTH_BUFFER_BIT									= 0x00000100;
 	constexpr GLint GL_STENCIL_BUFFER_BIT								= 0x00000400;
