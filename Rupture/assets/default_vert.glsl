@@ -1,19 +1,25 @@
 #version 330 core
 
-layout (location = 0) in vec3 aPos;
-layout (location = 1) in vec4 aColor;
-layout (location = 2) in vec2 aTexCoord;
-layout (location = 3) in float aTexID;
+// Fixed data
+layout (location = 0) in vec3 a_Position;
+layout (location = 1) in vec2 a_UV;
 
-uniform mat4 View;
-uniform mat4 Projection;
+// Per instance data
+layout (location = 2) in vec4 a_Color;
+layout (location = 3) in int a_TextureID;
+layout (location = 4) in mat4 a_ModelMatrix;
 
-out vec2 TexCoord;
-out vec4 OutColor;
+uniform mat4 m_View;
+uniform mat4 m_Projection;
+
+out vec2 f_UV;
+out vec4 f_Color;
+out int f_TextureID;
 
 void main()
 {
-	gl_Position = Projection * View * vec4(aPos, 1.0);
-	TexCoord = aTexCoord;
-	OutColor = aColor;
+	gl_Position = m_Projection * m_View * a_ModelMatrix * vec4(a_Position, 1.0);
+	f_UV = a_UV;
+	f_Color = a_Color;
+	f_TextureID = a_TextureID;
 }
