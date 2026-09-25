@@ -5,14 +5,15 @@
 namespace Rupture::Rendering
 {
 	GLRenderer::GLRenderer(glm::vec2 viewportSize)
-		:FixedVertexData_(Graphics::GL::GL_ARRAY_BUFFER),
+		:QuadCount_(),
+		FixedVertexData_(Graphics::GL::GL_ARRAY_BUFFER),
 		PerInstanceData_(Graphics::GL::GL_ARRAY_BUFFER),
 		ElementBufferObject_(Graphics::GL::GL_ELEMENT_ARRAY_BUFFER),
 		ViewportSize_(viewportSize),
 		ViewMatrix_(1.0f),
 		ProjectionMatrix_(glm::ortho(0.0f, ViewportSize_.x, ViewportSize_.y, 0.0f))
 	{
-		InstancesData_.reserve(GLRenderer::MAX_QUADS);
+		InstancesData_.reserve(GLRenderer::BATCH_CAPACITY);
 
 		// Load shaders
 		ShaderProgram_.CompileShader(Graphics::GL::GL_VERTEX_SHADER, "assets/default_vert.glsl");
@@ -38,8 +39,8 @@ namespace Rupture::Rendering
 		VertexArrayObject_.Bind();
 
 		ElementBufferObject_.Bind();
-		ElementBufferObject_.AllocateData(GLRenderer::MAX_INDICES * sizeof(Graphics::GL::GLuint), Indices_.data());
 		GenIndices();
+		ElementBufferObject_.AllocateData(GLRenderer::MAX_INDICES * sizeof(Graphics::GL::GLuint), Indices_.data());
 
 		// White texture will sit at index 0
 		WhiteTexture_.Bind(Graphics::GL::GL_TEXTURE0);
@@ -59,7 +60,7 @@ namespace Rupture::Rendering
 		RP_GL(Graphics::GL::glEnableVertexAttribArray(7));
 
 		FixedVertexData_.Bind();
-		FixedVertexData_.AllocateData(sizeof(Vertex), &quad);
+		FixedVertexData_.AllocateData(sizeof(quad), &quad);
 		// Fixed data
 		/// Position
 		RP_GL(Graphics::GL::glVertexAttribPointer(
@@ -86,8 +87,28 @@ namespace Rupture::Rendering
 
 		// Model Matrix
 		RP_GL(Graphics::GL::glVertexAttribPointer(
-			4, 1, Graphics::GL::GL_FLOAT_MAT4, Graphics::GL::GL_FALSE,
+			4, 4, Graphics::GL::GL_FLOAT, Graphics::GL::GL_FALSE,
 			sizeof(InstanceData), reinterpret_cast<const void*>(offsetof(InstanceData, ModelMatrix))));
+
+		RP_GL(Graphics::GL::glVertexAttribPointer(
+			5, 4, Graphics::GL::GL_FLOAT, Graphics::GL::GL_FALSE,
+			sizeof(InstanceData), reinterpret_cast<const void*>(offsetof(InstanceData, ModelMatrix) + sizeof(glm::vec4))));
+
+		RP_GL(Graphics::GL::glVertexAttribPointer(
+			6, 4, Graphics::GL::GL_FLOAT, Graphics::GL::GL_FALSE,
+			sizeof(InstanceData), reinterpret_cast<const void*>(offsetof(InstanceData, ModelMatrix) + sizeof(glm::vec4) * 2)));
+
+		RP_GL(Graphics::GL::glVertexAttribPointer(
+			7, 4, Graphics::GL::GL_FLOAT, Graphics::GL::GL_FALSE,
+			sizeof(InstanceData), reinterpret_cast<const void*>(offsetof(InstanceData, ModelMatrix) + sizeof(glm::vec4) * 3)));
+
+		RP_GL(Graphics::GL::glVertexAttribDivisor(2, 1));
+		RP_GL(Graphics::GL::glVertexAttribDivisor(3, 1));
+
+		RP_GL(Graphics::GL::glVertexAttribDivisor(4, 1));
+		RP_GL(Graphics::GL::glVertexAttribDivisor(5, 1));
+		RP_GL(Graphics::GL::glVertexAttribDivisor(6, 1));
+		RP_GL(Graphics::GL::glVertexAttribDivisor(7, 1));
 
 		VertexArrayObject_.Unbind();
 	}
@@ -120,13 +141,16 @@ namespace Rupture::Rendering
 
 		RP_GL(Graphics::GL::glBufferSubData(
 			Graphics::GL::GL_ARRAY_BUFFER, 0, 
-			GLRenderer::BATCH_CAPACITY, InstancesData_.data()
+			sizeof(InstanceData) * GLRenderer::BATCH_CAPACITY, 
+			InstancesData_.data()
 		));
 
-		RP_GL(Graphics::GL::glDrawElements(
+		RP_GL(Graphics::GL::glDrawElementsInstanced(
 			Graphics::GL::GL_TRIANGLES, 
 			QuadCount_ * INDICES_PER_QUAD, 
-			Graphics::GL::GL_UNSIGNED_INT, nullptr
+			Graphics::GL::GL_UNSIGNED_INT,
+			nullptr,
+			QuadCount_
 		));
 
 		QuadCount_ = 0;
@@ -140,8 +164,8 @@ namespace Rupture::Rendering
 			StartBatch();
 		}
 		
-		glm::mat4 model = glm::scale(glm::mat4(1.0f), glm::vec3(position, 1.0f));
-		model = glm::translate(model, glm::vec3(size, 0.0f));
+		glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(position, 0.0f));
+		model = glm::scale(model, glm::vec3(size, 1.0f));
 
 		InstancesData_.emplace_back(color, 0, model);
 

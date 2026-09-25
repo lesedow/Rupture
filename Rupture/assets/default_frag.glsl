@@ -2,7 +2,7 @@
 
 in vec2 f_UV;
 in vec4 f_Color;
-in int f_TextureID;
+flat in uint f_TextureID;
 
 out vec4 FragColor;
 

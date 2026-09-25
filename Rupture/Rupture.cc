@@ -44,7 +44,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PWSTR lpCmdLine
 	Rupture::Platform::Window ruptureWindow(glm::vec2(SCREEN_W, SCREEN_H), L"Rupture");
 	ruptureWindow.CreateGLContext();
 
-	Rupture::Rendering::GLRenderer Renderer_(glm::vec2(1280.0f, 720.0f));
+	Rupture::Rendering::GLRenderer Renderer_(glm::vec2(SCREEN_W, SCREEN_H));
 
 	std::string glVersion(reinterpret_cast<const char*>(RGL::glGetString(RGL::GL_VERSION)));
 	std::string glVendor(reinterpret_cast<const char*>(RGL::glGetString(RGL::GL_VENDOR)));
@@ -76,11 +76,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PWSTR lpCmdLine
 		RP_GL(RGL::glClear(RGL::GL_COLOR_BUFFER_BIT | RGL::GL_DEPTH_BUFFER_BIT));
 
 		Renderer_.StartBatch();
-		Renderer_.DrawQuad(glm::vec2(0.0f, 0.0f), glm::vec2(100.0f, 100.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
-		Renderer_.DrawQuad(glm::vec2(0.0f, 720.0f), glm::vec2(100.0f, 100.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
-		Renderer_.DrawQuad(glm::vec2(900.0f, 240.0f), glm::vec2(100.0f, 100.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
-		Renderer_.DrawQuad(glm::vec2(230.0f, 140.0f), glm::vec2(100.0f, 100.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
-		Renderer_.DrawQuad(glm::vec2(40.0f, 840.0f), glm::vec2(100.0f, 100.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+		Renderer_.DrawQuad(glm::vec2(150.0f, SCREEN_H / 2.0f), glm::vec2(300.0f, 300.0f), glm::vec4(0.05f, 0.324f, 0.120f, 1.0f));
 		Renderer_.EndBatch();
 
 		SwapBuffers(ruptureWindow.GetDeviceContext());
