@@ -12,14 +12,7 @@ namespace Rupture::Rendering
 		ViewMatrix_(1.0f),
 		ProjectionMatrix_(glm::ortho(0.0f, ViewportSize_.x, ViewportSize_.y, 0.0f))
 	{
-		ModelMatrices_.reserve(GLRenderer::MAX_QUADS);
-		
-		// Bind the buffers
-		VertexArrayObject_.Bind();
-		FixedVertexData_.Bind();
-		ElementBufferObject_.Bind();
-
-		WhiteTexture_.Bind(Graphics::GL::GL_TEXTURE0);
+		InstancesData_.reserve(GLRenderer::MAX_QUADS);
 
 		// Load shaders
 		ShaderProgram_.CompileShader(Graphics::GL::GL_VERTEX_SHADER, "assets/default_vert.glsl");
@@ -30,38 +23,71 @@ namespace Rupture::Rendering
 		ShaderProgram_.SetUniformMatrix4("m_Projection", 1, Graphics::GL::GL_FALSE, glm::value_ptr(ProjectionMatrix_));
 		ShaderProgram_.SetUniformMatrix4("m_View", 1, Graphics::GL::GL_FALSE, glm::value_ptr(ViewMatrix_));
 	
-		ShaderProgram_.SetUniform("OutTexture", 0);
+		//ShaderProgram_.SetUniform("OutTexture", 0);
+		
+		Vertex quad[]
+		{
+			{ { 0.5f, 0.5f, 0.0f }, { 1.0f, 1.0f } },
+			{ { -0.5f, 0.5f, 0.0f }, { 0.0f, 1.0f } },
+			{ {-0.5f, -0.5f, 0.0f }, { 0.0f, 0.0f } },
+			{ {0.5f, -0.5f, 0.0f }, { 1.0f, 0.0f } },
+		};
 
-		// Allocate enough memory for BATCH_CAPCITY
-		VertexBufferObject_.AllocateData(GLRenderer::BATCH_CAPACITY * sizeof(Vertex));
-		GenIndices();
+
+		// Bind the buffers
+		VertexArrayObject_.Bind();
+
+		ElementBufferObject_.Bind();
 		ElementBufferObject_.AllocateData(GLRenderer::MAX_INDICES * sizeof(Graphics::GL::GLuint), Indices_.data());
+		GenIndices();
+
+		// White texture will sit at index 0
+		WhiteTexture_.Bind(Graphics::GL::GL_TEXTURE0);
+		const int avaliableTextureSlots = 0;
+		ShaderProgram_.SetUniform1iv("u_Textures", 1, &avaliableTextureSlots);
 
 		// Enable attributes for the vertex
 		RP_GL(Graphics::GL::glEnableVertexAttribArray(0));
 		RP_GL(Graphics::GL::glEnableVertexAttribArray(1));
+
+		// Enable attributes for the instance
 		RP_GL(Graphics::GL::glEnableVertexAttribArray(2));
 		RP_GL(Graphics::GL::glEnableVertexAttribArray(3));
+		RP_GL(Graphics::GL::glEnableVertexAttribArray(4));
+		RP_GL(Graphics::GL::glEnableVertexAttribArray(5));
+		RP_GL(Graphics::GL::glEnableVertexAttribArray(6));
+		RP_GL(Graphics::GL::glEnableVertexAttribArray(7));
 
+		FixedVertexData_.Bind();
+		FixedVertexData_.AllocateData(sizeof(Vertex), &quad);
+		// Fixed data
 		/// Position
 		RP_GL(Graphics::GL::glVertexAttribPointer(
 			0, 3, Graphics::GL::GL_FLOAT, Graphics::GL::GL_FALSE, 
 			sizeof(Vertex), reinterpret_cast<const void*>(offsetof(Vertex, Position))));
 
-		// Color
-		RP_GL(Graphics::GL::glVertexAttribPointer(
-			1, 4, Graphics::GL::GL_FLOAT, Graphics::GL::GL_FALSE, 
-			sizeof(Vertex), reinterpret_cast<const void*>(offsetof(Vertex, Color))));
-
 		// UV Coordinates
 		RP_GL(Graphics::GL::glVertexAttribPointer(
-			2, 2, Graphics::GL::GL_FLOAT, Graphics::GL::GL_FALSE, 
-			sizeof(Vertex), reinterpret_cast<const void*>(offsetof(Vertex, TextureCoords))));
+			1, 2, Graphics::GL::GL_FLOAT, Graphics::GL::GL_FALSE, 
+			sizeof(Vertex), reinterpret_cast<const void*>(offsetof(Vertex, UV))));
+		
+		PerInstanceData_.Bind();
+		PerInstanceData_.AllocateData(GLRenderer::BATCH_CAPACITY * sizeof(InstanceData));
+		// Per instance data
+		// Color
+		RP_GL(Graphics::GL::glVertexAttribPointer(
+			2, 4, Graphics::GL::GL_FLOAT, Graphics::GL::GL_FALSE, 
+			sizeof(InstanceData), reinterpret_cast<const void*>(offsetof(InstanceData, Color))));
 
 		// Texture ID
 		RP_GL(Graphics::GL::glVertexAttribIPointer(
 			3, 1, Graphics::GL::GL_INT, 
-			sizeof(Vertex), reinterpret_cast<const void*>(offsetof(Vertex, TextureId))));
+			sizeof(InstanceData), reinterpret_cast<const void*>(offsetof(InstanceData, TextureId))));
+
+		// Model Matrix
+		RP_GL(Graphics::GL::glVertexAttribPointer(
+			4, 1, Graphics::GL::GL_FLOAT_MAT4, Graphics::GL::GL_FALSE,
+			sizeof(InstanceData), reinterpret_cast<const void*>(offsetof(InstanceData, ModelMatrix))));
 
 		VertexArrayObject_.Unbind();
 	}
@@ -85,7 +111,7 @@ namespace Rupture::Rendering
 
 	void GLRenderer::StartBatch()
 	{
-		Vertices_.clear();
+		InstancesData_.clear();
 	}
 
 	void GLRenderer::EndBatch()
@@ -94,7 +120,7 @@ namespace Rupture::Rendering
 
 		RP_GL(Graphics::GL::glBufferSubData(
 			Graphics::GL::GL_ARRAY_BUFFER, 0, 
-			GLRenderer::BATCH_CAPACITY, Vertices_.data()
+			GLRenderer::BATCH_CAPACITY, InstancesData_.data()
 		));
 
 		RP_GL(Graphics::GL::glDrawElements(
@@ -106,11 +132,6 @@ namespace Rupture::Rendering
 		QuadCount_ = 0;
 	}
 
-	glm::vec3 GetTransformedVector(glm::vec3 base, glm::vec2 size, glm::vec2 position)
-	{
-		return base * glm::vec3(size, 1.0f) + glm::vec3(position, 0.0f);
-	}
-
 	void GLRenderer::DrawQuad(glm::vec2 position, glm::vec2 size, glm::vec4 color)
 	{		
 		if (QuadCount_ >= GLRenderer::MAX_QUADS)
@@ -119,42 +140,10 @@ namespace Rupture::Rendering
 			StartBatch();
 		}
 		
-		Vertex v1 
-		{
-			.Position = GetTransformedVector(glm::vec3{ 0.5f, 0.5f, 0.0f }, size, position),
-			.Color = color,
-			.TextureCoords = glm::vec2{ 1.0f, 1.0f },
-			.TextureId = 0
-		};
+		glm::mat4 model = glm::scale(glm::mat4(1.0f), glm::vec3(position, 1.0f));
+		model = glm::translate(model, glm::vec3(size, 0.0f));
 
-		Vertex v2 
-		{
-			.Position = GetTransformedVector(glm::vec3{ -0.5f, 0.5f, 0.0f }, size, position),
-			.Color = color,
-			.TextureCoords = glm::vec2{ 0.0f, 1.0f },
-			.TextureId = 0
-		};
-
-		Vertex v3 
-		{
-			.Position = GetTransformedVector(glm::vec3{ -0.5f, -0.5f, 0.0f }, size, position),
-			.Color = color,
-			.TextureCoords = glm::vec2{ 0.0f, 0.0f },
-			.TextureId = 0
-		};
-
-		Vertex v4
-		{
-			.Position = GetTransformedVector(glm::vec3{ 0.5f, -0.5f, 0.0f }, size, position),
-			.Color = color,
-			.TextureCoords = glm::vec2{ 1.0f, 0.0f },
-			.TextureId = 0
-		};
-
-		Vertices_.push_back(v1);
-		Vertices_.push_back(v2);
-		Vertices_.push_back(v3);
-		Vertices_.push_back(v4);
+		InstancesData_.emplace_back(color, 0, model);
 
 		QuadCount_++;
 	}

@@ -13,9 +13,14 @@ namespace Rupture::Rendering
 	struct Vertex
 	{
 		glm::vec3 Position;
+		glm::vec2 UV;
+	};
+
+	struct InstanceData
+	{
 		glm::vec4 Color;
-		glm::vec2 TextureCoords;
-		std::uint32_t TextureId;
+		Graphics::GL::GLuint TextureId;
+		glm::mat4 ModelMatrix;
 	};
 
 	class GLRenderer
@@ -27,8 +32,8 @@ namespace Rupture::Rendering
 		static constexpr Graphics::GL::GLint MAX_INDICES			= MAX_QUADS * INDICES_PER_QUAD;
 		static constexpr Graphics::GL::GLint MAX_ACTIVE_TEXTURES	= 32;
 	private:
-		std::vector<glm::mat3> ModelMatrices_;
-		std::vector<std::uint32_t> Indices_;
+		std::vector<InstanceData> InstancesData_;
+		std::vector<Graphics::GL::GLuint> Indices_;
 		Graphics::GL::VertexArrayObject VertexArrayObject_;
 		Graphics::GL::GLBuffer FixedVertexData_;
 		Graphics::GL::GLBuffer PerInstanceData_;

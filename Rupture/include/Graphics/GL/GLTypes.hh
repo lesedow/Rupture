@@ -865,6 +865,7 @@ namespace Rupture::Graphics::GL
 	constexpr GLint WGL_CONTEXT_PROFILE_MASK_ARB						= 0x9126;
 	constexpr GLint WGL_CONTEXT_CORE_PROFILE_BIT_ARB					= 0x00000001;
 	constexpr GLint WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB			= 0x00000002;
+	constexpr GLuint GL_UNSIGNED_INT64_ARB								= 0x140F;
 
 	constexpr int CORE_3_3[]
 	{
@@ -1256,6 +1257,23 @@ namespace Rupture::Graphics::GL
 	using PFNGLCREATECONTEXTARBPROC = HGLRC(APIENTRYP)(HDC hdc, HGLRC hShareContext, const int *attribList);
 	using PFNGLCHOOSEPIXELFORMATARBPROC = BOOL(APIENTRYP)(HDC hdc, const int *piAttribIList, const FLOAT *pfAttribFList, UINT nMaxFormats, int *piFormats, UINT *nNumFormats);
 
+	using PFNGLGETTEXTUREHANDLEARBPROC = GLuint64(APIENTRYP) (GLuint texture);
+	using PFNGLGETTEXTURESAMPLERHANDLEARBPROC = GLuint64(APIENTRYP ) (GLuint texture, GLuint sampler);
+	using PFNGLMAKETEXTUREHANDLERESIDENTARBPROC = void(APIENTRYP) (GLuint64 handle);
+	using PFNGLMAKETEXTUREHANDLENONRESIDENTARBPROC = void (APIENTRYP ) (GLuint64 handle);
+	using PFNGLGETIMAGEHANDLEARBPROC = GLuint64(APIENTRYP ) (GLuint texture, GLint level, GLboolean layered, GLint layer, GLenum format);
+	using PFNGLMAKEIMAGEHANDLERESIDENTARBPROC = void(APIENTRYP) (GLuint64 handle, GLenum access);
+	using PFNGLMAKEIMAGEHANDLENONRESIDENTARBPROC = void(APIENTRYP) (GLuint64 handle);
+	using PFNGLUNIFORMHANDLEUI64ARBPROC = void(APIENTRYP) (GLint location, GLuint64 value);
+	using PFNGLUNIFORMHANDLEUI64VARBPROC = void(APIENTRYP) (GLint location, GLsizei count, const GLuint64* value);
+	using PFNGLPROGRAMUNIFORMHANDLEUI64ARBPROC = void(APIENTRYP) (GLuint program, GLint location, GLuint64 value);
+	using PFNGLPROGRAMUNIFORMHANDLEUI64VARBPROC = void (APIENTRYP ) (GLuint program, GLint location, GLsizei count, const GLuint64* values);
+	using PFNGLISTEXTUREHANDLERESIDENTARBPROC = GLboolean(APIENTRYP) (GLuint64 handle);
+	using PFNGLISIMAGEHANDLERESIDENTARBPROC = GLboolean(APIENTRYP ) (GLuint64 handle);
+	using PFNGLVERTEXATTRIBL1UI64ARBPROC = void(APIENTRYP) (GLuint index, GLuint64EXT x);
+	using PFNGLVERTEXATTRIBL1UI64VARBPROC = void(APIENTRYP) (GLuint index, const GLuint64EXT* v);
+	using PFNGLGETVERTEXATTRIBLUI64VARBPROC = void (APIENTRYP ) (GLuint index, GLenum pname, GLuint64EXT* params);
+
 	inline PFNGLCREATECONTEXTARBPROC wglCreateContextAttribsARB{ nullptr };
 	inline PFNGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormatARB{ nullptr };
 	inline PFNGLCULLFACEPROC glCullFace{ nullptr };
@@ -1610,4 +1628,21 @@ namespace Rupture::Graphics::GL
 	inline PFNGLVERTEXATTRIBP3UIVPROC glVertexAttribP3uiv{ nullptr };
 	inline PFNGLVERTEXATTRIBP4UIPROC glVertexAttribP4ui{ nullptr };
 	inline PFNGLVERTEXATTRIBP4UIVPROC glVertexAttribP4uiv{ nullptr };
+
+	inline PFNGLGETTEXTUREHANDLEARBPROC glGetTextureHandleARB{ nullptr };
+	inline PFNGLGETTEXTURESAMPLERHANDLEARBPROC glGetTextureSamplerHandleARB{ nullptr };
+	inline PFNGLMAKETEXTUREHANDLERESIDENTARBPROC glMakeTextureHandleResidentARB{ nullptr };
+	inline PFNGLMAKETEXTUREHANDLENONRESIDENTARBPROC glMakeTextureHandleNonResidentARB{ nullptr };
+	inline PFNGLGETIMAGEHANDLEARBPROC glGetImageHandleARB{ nullptr };
+	inline PFNGLMAKEIMAGEHANDLERESIDENTARBPROC glMakeImageHandleResidentARB{ nullptr };
+	inline PFNGLMAKEIMAGEHANDLENONRESIDENTARBPROC glMakeImageHandleNonResidentARB{ nullptr };
+	inline PFNGLUNIFORMHANDLEUI64ARBPROC glUniformHandleui64ARB{ nullptr };
+	inline PFNGLUNIFORMHANDLEUI64VARBPROC glUniformHandleui64vARB{ nullptr };
+	inline PFNGLPROGRAMUNIFORMHANDLEUI64ARBPROC glProgramUniformHandleui64ARB{ nullptr };
+	inline PFNGLPROGRAMUNIFORMHANDLEUI64VARBPROC glProgramUniformHandleui64vARB{ nullptr };
+	inline PFNGLISTEXTUREHANDLERESIDENTARBPROC glIsTextureHandleResidentARB{ nullptr };
+	inline PFNGLISIMAGEHANDLERESIDENTARBPROC glIsImageHandleResidentARB{ nullptr };
+	inline PFNGLVERTEXATTRIBL1UI64ARBPROC glVertexAttribL1ui64ARB{ nullptr };
+	inline PFNGLVERTEXATTRIBL1UI64VARBPROC glVertexAttribL1ui64vARB{ nullptr };
+	inline PFNGLGETVERTEXATTRIBLUI64VARBPROC glGetVertexAttribLui64vARB{ nullptr };
 }
