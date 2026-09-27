@@ -13,7 +13,7 @@ namespace Rupture::Rendering
 		ViewMatrix_(1.0f),
 		ProjectionMatrix_(glm::ortho(0.0f, ViewportSize_.x, ViewportSize_.y, 0.0f))
 	{
-		InstancesData_.reserve(GLRenderer::BATCH_CAPACITY);
+		InstancesData_.reserve(GLRenderer::MAX_QUADS);
 
 		// Load shaders
 		ShaderProgram_.CompileShader(Graphics::GL::GL_VERTEX_SHADER, "assets/default_vert.glsl");
@@ -73,7 +73,7 @@ namespace Rupture::Rendering
 			sizeof(Vertex), reinterpret_cast<const void*>(offsetof(Vertex, UV))));
 		
 		PerInstanceData_.Bind();
-		PerInstanceData_.AllocateData(GLRenderer::BATCH_CAPACITY * sizeof(InstanceData));
+		PerInstanceData_.AllocateData(GLRenderer::MAX_QUADS * sizeof(InstanceData));
 		// Per instance data
 		// Color
 		RP_GL(Graphics::GL::glVertexAttribPointer(
@@ -141,7 +141,7 @@ namespace Rupture::Rendering
 
 		RP_GL(Graphics::GL::glBufferSubData(
 			Graphics::GL::GL_ARRAY_BUFFER, 0, 
-			sizeof(InstanceData) * GLRenderer::BATCH_CAPACITY, 
+			sizeof(InstanceData) * GLRenderer::MAX_QUADS, 
 			InstancesData_.data()
 		));
 
@@ -156,7 +156,7 @@ namespace Rupture::Rendering
 		QuadCount_ = 0;
 	}
 
-	void GLRenderer::DrawQuad(glm::vec2 position, glm::vec2 size, glm::vec4 color)
+	void GLRenderer::BatchQuad(glm::vec2 position, glm::vec2 size, glm::vec4 color)
 	{		
 		if (QuadCount_ >= GLRenderer::MAX_QUADS)
 		{
@@ -177,7 +177,7 @@ namespace Rupture::Rendering
 
 	}
 
-	void GLRenderer::DrawTexture(
+	void GLRenderer::BatchTexture(
 		const Graphics::GL::Texture2D& texture, 
 		glm::vec2 position, 
 		glm::vec2 size, 
