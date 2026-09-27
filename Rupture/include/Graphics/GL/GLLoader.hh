@@ -4,6 +4,7 @@
 
 #include "Graphics/GL/GLTypes.hh"
 #include "Utils/Macros/GLMacros.hh"
+#include "Utils/Logging/Logging.hh"
 
 namespace Rupture::Graphics::GL
 {
@@ -26,7 +27,7 @@ namespace Rupture::Graphics::GL
 		}
 			glFunc = reinterpret_cast<Func>(address);
 			if (!address)
-				RP_LOG_ERROR(std::format("Failed to load {}", name));
+				Rupture::Logging::LogError(std::format(L"Failed to load {}", name), Rupture::Logging::CAT_GL);
 	}
 
 	inline void LoadGL10()
