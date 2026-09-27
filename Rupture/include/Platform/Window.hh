@@ -25,6 +25,6 @@ namespace Rupture::Platform
 		HGLRC GetGLContext() const;
 		void SwapFramebuffers() const;
 	protected:
-		LRESULT HandleMessages(UINT uMsg, WPARAM wParam, LPARAM lParam);
+		LRESULT HandleMessages(UINT uMsg, WPARAM wParam, LPARAM lParam) const;
 	};
 }
