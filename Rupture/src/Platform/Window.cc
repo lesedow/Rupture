@@ -1,8 +1,8 @@
 #include "Precompiled.hh"
+
 #include "Platform/Window.hh"
 #include "Graphics/GL/GLtypes.hh"
-#include "Utils/Logging/Logger.hh"
-#include "Utils/Macros/LoggerMacros.hh"
+#include "Utils/Logging/Logging.hh"
 #include "Utils/Macros/WinAPIMacros.hh"
 #include "Utils/Platform/WinAPI.hh"
 
@@ -21,14 +21,14 @@ namespace Rupture::Platform
 			SetLastError(ERROR_SUCCESS); 
 
 			LONG_PTR lPtr = SetWindowLongPtr(windowHandle, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(self));
-			RP_WIN64(!lPtr);
+			RP_WINAPI(!lPtr);
 
-			self->window_ = windowHandle;
+			self->Window_ = windowHandle;
 		}
 		else {
 			SetLastError(ERROR_SUCCESS);
 			LONG_PTR lPtr = GetWindowLongPtr(windowHandle, GWLP_USERDATA);
-			RP_WIN64(!lPtr);
+			RP_WINAPI(!lPtr);
 
 			self = reinterpret_cast<Window*>(lPtr);
 		}
@@ -41,13 +41,15 @@ namespace Rupture::Platform
 		return DefWindowProc(windowHandle, uMsg, wParam, lParam);
 	}
 
+	Window::~Window() {}
+
 	Window::Window(glm::ivec2 dimensions, std::wstring_view name)
-		:dimensions_(dimensions), name_(name)
+		:Dimensions_(dimensions), Name_(name)
 	{
 		const std::wstring CLASS_NAME = L"Rupture";
 
 		HINSTANCE instance{ GetModuleHandle(nullptr) };
-		RP_WIN64(instance == nullptr);
+		RP_WINAPI(instance == nullptr);
 
 		WNDCLASS windowClass{};
 		windowClass.lpfnWndProc = Window::WinProc;
@@ -56,26 +58,32 @@ namespace Rupture::Platform
 		windowClass.style = CS_VREDRAW | CS_HREDRAW | CS_OWNDC;
 
 		ATOM registeredClass{ RegisterClass(&windowClass) };
-		RP_WIN64(registeredClass == 0);
+		RP_WINAPI(registeredClass == 0);
 
-		window_ = CreateWindowEx(
+		Window_ = CreateWindowEx(
 			WS_EX_OVERLAPPEDWINDOW,
 			CLASS_NAME.c_str(),
-			name_.c_str(),
+			Name_.c_str(),
 			WS_OVERLAPPEDWINDOW,
-			CW_USEDEFAULT, CW_USEDEFAULT, dimensions_.x, dimensions_.y,
+			CW_USEDEFAULT, CW_USEDEFAULT, Dimensions_.x, Dimensions_.y,
 			nullptr, nullptr, instance, this
 		);
 
-		RP_WIN64(!window_);
+		RP_WINAPI(!Window_);
 
-		ShowWindow(window_, SW_SHOWDEFAULT);
+		ShowWindow(Window_, SW_SHOWDEFAULT);
+	}
+
+	void Window::SwapFramebuffers() const
+	{
+		BOOL swapped = SwapBuffers(DeviceContext_);
+		RP_WINAPI(!swapped);
 	}
 
 	void Window::CreateGLContext()
 	{
-		context_ = GetDC(window_);
-
+		DeviceContext_ = GetDC(Window_);
+		
 		UINT numberOfFormats{};
 		int pixelFormat{};
 
@@ -83,45 +91,48 @@ namespace Rupture::Platform
 		PIXELFORMATDESCRIPTOR pixelFormatDescriptor{};
 
 		BOOL pixelFormatChosen{ Rupture::Graphics::GL::wglChoosePixelFormatARB(
-			context_, Rupture::Graphics::GL::RGBA_32_24_8,
+			DeviceContext_, Rupture::Graphics::GL::RGBA_32_24_8,
 			nullptr, 1, &pixelFormat,
 			&numberOfFormats
 			) };
-		RP_WIN64(!pixelFormatChosen);
+		RP_WINAPI(!pixelFormatChosen);
 			
-		BOOL pixelFormatSet{ SetPixelFormat(context_, pixelFormat, &pixelFormatDescriptor) };
-		RP_WIN64(!pixelFormatSet);
+		BOOL pixelFormatSet{ SetPixelFormat(DeviceContext_, pixelFormat, &pixelFormatDescriptor) };
+		RP_WINAPI(!pixelFormatSet);
 
-		glContext_ = Rupture::Graphics::GL::wglCreateContextAttribsARB(
-			context_,
+		GLContext_ = Rupture::Graphics::GL::wglCreateContextAttribsARB(
+			DeviceContext_,
 			nullptr,
 			Rupture::Graphics::GL::CORE_3_3
 		);
-		RP_WIN64(!glContext_);
+		RP_WINAPI(!GLContext_);
 
-		BOOL setContext = wglMakeCurrent(context_, glContext_);
-		RP_WIN64(!setContext);
+		BOOL setContext = wglMakeCurrent(DeviceContext_, GLContext_);
+		RP_WINAPI(!setContext);
 	}
 
-	LRESULT Window::HandleMessages(UINT uMsg, WPARAM wParam, LPARAM lParam)
+	LRESULT Window::HandleMessages(UINT uMsg, WPARAM wParam, LPARAM lParam) const
 	{
 		switch (uMsg)
-		{
+		{ 
+		case WM_KEYDOWN:
+			// Logging::LogInfo(std::format("Pressed key: {}", (char)wParam), Logging::CAT_WINAPI);
+			break;
 		case WM_DESTROY:
 			PostQuitMessage(0);
 			return 0;
 		default:
-			return DefWindowProc(window_, uMsg, wParam, lParam);
+			return DefWindowProc(Window_, uMsg, wParam, lParam);
 		}
 	}
 
 	HDC Window::GetDeviceContext() const
 	{
-		return context_;
+		return DeviceContext_;
 	}
 
 	HGLRC Window::GetGLContext() const
 	{
-		return glContext_;
+		return GLContext_;
 	}
 }
