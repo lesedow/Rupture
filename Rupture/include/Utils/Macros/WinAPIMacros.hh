@@ -2,9 +2,9 @@
 
 #include "Precompiled.hh"
 
-#if defined(_WIN64)
-#ifndef RP_WIN64
-#define RP_WIN64(failCondition) \
+#if defined(_WIN32)
+#ifndef RP_WINAPI
+#define RP_WINAPI(failCondition) \
 	do{\
 		DWORD errorID = GetLastError();\
 		if ((failCondition) && errorID != ERROR_SUCCESS){\
