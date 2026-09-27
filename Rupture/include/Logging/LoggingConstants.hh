@@ -12,25 +12,25 @@ namespace Rupture::Logging
 	inline constexpr uint32_t RP_ALL	= RP_TRACE | RP_DEBUG | RP_INFO | RP_WARN | RP_ERROR;
 	inline constexpr uint32_t RP_LEVEL	= RP_ALL;
 
-	inline constexpr std::wstring_view TRACE_COLOR	= L"\x1b[96m";
-	inline constexpr std::wstring_view DEBUG_COLOR	= L"\x1b[32m";
-	inline constexpr std::wstring_view WARN_COLOR	= L"\x1b[33m";
-	inline constexpr std::wstring_view INFO_COLOR	= L"\x1b[37m";
-	inline constexpr std::wstring_view ERROR_COLOR	= L"\x1b[31m";
-	inline constexpr std::wstring_view ASSERT_COLOR = L"\x1b[35m";
+	inline constexpr std::string_view TRACE_COLOR	= "\x1b[96m";
+	inline constexpr std::string_view DEBUG_COLOR	= "\x1b[32m";
+	inline constexpr std::string_view WARN_COLOR	= "\x1b[33m";
+	inline constexpr std::string_view INFO_COLOR	= "\x1b[37m";
+	inline constexpr std::string_view ERROR_COLOR	= "\x1b[31m";
+	inline constexpr std::string_view ASSERT_COLOR	= "\x1b[35m";
 
-	inline constexpr std::wstring_view CAT_GL		= L"[GL]";
-	inline constexpr std::wstring_view CAT_VK		= L"[VK]";
-	inline constexpr std::wstring_view CAT_DX		= L"[DX]";
-	inline constexpr std::wstring_view CAT_METAL	= L"[METAL]";
-	inline constexpr std::wstring_view CAT_WINAPI	= L"[WINAPI]";
-	inline constexpr std::wstring_view CAT_X11		= L"[X11]";
-	inline constexpr std::wstring_view CAT_WAYLAND	= L"[WAYLAND]";
-	inline constexpr std::wstring_view CAT_COCOA	= L"[COCOA]";
-	inline constexpr std::wstring_view TRACE_LVL	= L"[TRACE]";
-	inline constexpr std::wstring_view DEBUG_LVL	= L"[DEBUG]";
-	inline constexpr std::wstring_view INFO_LVL		= L"[INFO]";
-	inline constexpr std::wstring_view WARN_LVL		= L"[WARN]";
-	inline constexpr std::wstring_view ERROR_LVL	= L"[ERROR]";
-	inline constexpr std::wstring_view ASSERTION	= L"[ASSERT]";
+	inline constexpr std::string_view CAT_GL		= "[GL]";
+	inline constexpr std::string_view CAT_VK		= "[VK]";
+	inline constexpr std::string_view CAT_DX		= "[DX]";
+	inline constexpr std::string_view CAT_METAL		= "[METAL]";
+	inline constexpr std::string_view CAT_WINAPI	= "[WINAPI]";
+	inline constexpr std::string_view CAT_X11		= "[X11]";
+	inline constexpr std::string_view CAT_WAYLAND	= "[WAYLAND]";
+	inline constexpr std::string_view CAT_COCOA		= "[COCOA]";
+	inline constexpr std::string_view TRACE_LVL		= "[TRACE]";
+	inline constexpr std::string_view DEBUG_LVL		= "[DEBUG]";
+	inline constexpr std::string_view INFO_LVL		= "[INFO]";
+	inline constexpr std::string_view WARN_LVL		= "[WARN]";
+	inline constexpr std::string_view ERROR_LVL		= "[ERROR]";
+	inline constexpr std::string_view ASSERTION		= "[ASSERT]";
 }
