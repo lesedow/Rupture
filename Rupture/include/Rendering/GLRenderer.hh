@@ -26,8 +26,7 @@ namespace Rupture::Rendering
 	class GLRenderer
 	{
 	private:
-		static constexpr Graphics::GL::GLsizeiptr BATCH_CAPACITY	= 0x2710LL;
-		static constexpr Graphics::GL::GLint MAX_QUADS				= BATCH_CAPACITY / 4;
+		static constexpr Graphics::GL::GLint MAX_QUADS				= 2500;
 		static constexpr Graphics::GL::GLint INDICES_PER_QUAD		= 6;
 		static constexpr Graphics::GL::GLint MAX_INDICES			= MAX_QUADS * INDICES_PER_QUAD;
 		static constexpr Graphics::GL::GLint MAX_ACTIVE_TEXTURES	= 32;
@@ -53,8 +52,8 @@ namespace Rupture::Rendering
 	public:
 		void StartBatch();
 		void EndBatch();
-		void DrawQuad(glm::vec2 position, glm::vec2 size, glm::vec4 color);
+		void BatchQuad(glm::vec2 position, glm::vec2 size, glm::vec4 color);
 		void DrawCircle(glm::vec2 position, Graphics::GL::GLfloat radius, glm::vec4 color);
-		void DrawTexture(const Graphics::GL::Texture2D& texture, glm::vec2 position, glm::vec2 size, glm::vec4 tint);
+		void BatchTexture(const Graphics::GL::Texture2D& texture, glm::vec2 position, glm::vec2 size, glm::vec4 tint);
 	};
 }
