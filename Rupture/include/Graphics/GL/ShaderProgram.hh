@@ -26,7 +26,7 @@ namespace Rupture::Graphics::GL
 
 		void CompileShader(GLenum type, const std::filesystem::path& path);
 		void LinkProgram();
-		void UseProgram();
+		void UseProgram() const;
 
 		void SetUniformMatrix2(const char* name, GLsizei count, GLboolean transpose, const GLfloat* value);
 		void SetUniformMatrix3(const char* name, GLsizei count, GLboolean transpose, const GLfloat* value);
