@@ -4,7 +4,7 @@
 
 namespace Rupture::Utils::Platform
 {
-	std::string GetFormattedErrorMessage(DWORD errorID)
+	inline std::string GetFormattedErrorMessage(DWORD errorID)
 	{
 		char* buffer{ nullptr };
 
