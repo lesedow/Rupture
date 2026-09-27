@@ -14,7 +14,7 @@ namespace Rupture::Graphics::GL
 		Texture2D();
 		Texture2D(const std::string& path);
 		~Texture2D();
-		void Bind(GLenum slot);
+		void Bind(GLenum slot) const;
 		glm::vec2 GetSize() const;
 	};
 }
