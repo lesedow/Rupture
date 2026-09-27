@@ -15,6 +15,7 @@
 #ifndef APIENTRYP
 #define APIENTRYP APIENTRY *
 #endif
+#undef ERROR
 #endif
 
 #include <stb_image.h>
