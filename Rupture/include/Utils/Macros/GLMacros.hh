@@ -17,7 +17,7 @@ do {\
 	std::string errors = Rupture::Utils::GL::GetGLErrors();\
 	if (!errors.empty()) {\
 		Rupture::Logging::LogError(std::format(\
-			L"\n[STATEMENT]: {}\n[FILE]: {}\n[LINE]: {}\n[ERROR]: {}\n",\
+			"\n[STATEMENT]: {}\n[FILE]: {}\n[LINE]: {}\n[ERROR]: {}\n",\
 			#statement, __FILE__, __LINE__, errors\
 			), Rupture::Logging::CAT_GL);\
 		__debugbreak();\
