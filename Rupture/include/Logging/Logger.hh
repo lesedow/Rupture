@@ -10,11 +10,11 @@ namespace Rupture::Logging
 		Logger() {}
 	public:
 	void Log(
-		std::wstring_view message, 
-		std::wstring_view category, 
-		std::wstring_view color, 
-		std::wstring_view lvl) const;
-	std::wstring GetTimestamp() const;
+		std::string_view message, 
+		std::string_view category, 
+		std::string_view color, 
+		std::string_view lvl) const;
+	std::string GetTimestamp() const;
 	public:
 		Logger(const Logger&) = delete;
 		Logger& operator=(const Logger&) = delete;
