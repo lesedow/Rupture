@@ -27,7 +27,7 @@ namespace Rupture::Graphics::GL
 		}
 			glFunc = reinterpret_cast<Func>(address);
 			if (!address)
-				Rupture::Logging::LogError(std::format(L"Failed to load {}", name), Rupture::Logging::CAT_GL);
+				Rupture::Logging::LogError(std::format("Failed to load {}", name), Rupture::Logging::CAT_GL);
 	}
 
 	inline void LoadGL10()
