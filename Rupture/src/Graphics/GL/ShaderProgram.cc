@@ -1,11 +1,10 @@
 #include "Precompiled.hh"
+
 #include "Graphics/GL/ShaderProgram.hh"
-
-#include "Utils/Logging/Logger.hh"
 #include "Utils/GL/GLError.hh"
-
 #include "Utils/Macros/GLMacros.hh"
-#include "Utils/Macros/LoggerMacros.hh"
+
+#include "Utils/Logging/Logging.hh"
 
 namespace Rupture::Graphics::GL
 {
@@ -32,7 +31,7 @@ namespace Rupture::Graphics::GL
 		}
 		catch (const std::ifstream::failure& err)
 		{
-			RP_LOG_ERROR(std::format("Failed to read file {}: {}", path.string(), err.what()));
+			Logging::LogError(std::format("Failed to read file {}: {}", path.string(), err.what()), Logging::CAT_GL);
 		}
 		
 		return shaderSrc.str();
@@ -62,7 +61,7 @@ namespace Rupture::Graphics::GL
 
 			RP_GL(glGetShaderInfoLog(id, length, nullptr, message.data()));
 
-			RP_LOG_ERROR(std::format("Failed to compile shader: {}", message));
+			Logging::LogError(std::format("Failed to compile shader: {}", message), Logging::CAT_GL);
 		};
 
 		shaderIds_.emplace_back(id);
@@ -89,7 +88,7 @@ namespace Rupture::Graphics::GL
 
 			RP_GL(glGetProgramInfoLog(id_, length, nullptr, message.data()));
 
-			RP_LOG_ERROR(std::format("Failed to link shader program: {}", message));
+			Logging::LogError(std::format("Failed to link shader program: {}", message), Logging::CAT_GL);
 		};
 
 		for (const auto& shaderId : shaderIds_)
@@ -101,7 +100,7 @@ namespace Rupture::Graphics::GL
 		shaderIds_.clear();
 	}
 
-	void ShaderProgram::UseProgram()
+	void ShaderProgram::UseProgram() const
 	{
 		RP_GL(glUseProgram(id_));
 	}
@@ -279,7 +278,10 @@ namespace Rupture::Graphics::GL
 		RP_GL(location = glGetUniformLocation(id_, name));
 
 		if (location == -1)
-			RP_LOG_ERROR(std::format("Uniform {} is not avaliable in shader program {}!\n", name, id_));
+			Logging::LogError(std::format(
+				"Uniform {} is not avaliable in shader program {}!\n", name, id_), 
+					Logging::CAT_GL
+				);
 		
 		uniformsCache_.emplace(name, location);
 
