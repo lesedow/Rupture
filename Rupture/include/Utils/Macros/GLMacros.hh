@@ -3,7 +3,7 @@
 #include "Precompiled.hh"
 
 #include "Utils/GL/GLError.hh"
-#include "Utils/Macros/LoggerMacros.hh"
+#include "Utils/Logging/Logging.hh"
 
 #ifndef GLLOAD
 #define GLLOAD(procName) Rupture::Graphics::GL::LoadGLFunction(procName, #procName);
@@ -11,16 +11,16 @@
 
 #ifndef RP_GL
 #define RP_GL(statement) \
-	do {\
-		Rupture::Utils::GL::ClearGLErrors();\
-		(statement); \
-		std::string errors = Rupture::Utils::GL::GetGLErrors();\
-		if (!errors.empty()) {\
-			RP_LOG_ERROR(std::format(\
-				"\n[STATEMENT]: {}\n[FILE]: {}\n[LINE]: {}\n[ERROR]: {}\n",\
-				#statement, __FILE__, __LINE__, errors\
-				))\
-			__debugbreak();\
-		}\
-	} while(0)
+do {\
+	Rupture::Utils::GL::ClearGLErrors();\
+	(statement); \
+	std::string errors = Rupture::Utils::GL::GetGLErrors();\
+	if (!errors.empty()) {\
+		Rupture::Logging::LogError(std::format(\
+			L"\n[STATEMENT]: {}\n[FILE]: {}\n[LINE]: {}\n[ERROR]: {}\n",\
+			#statement, __FILE__, __LINE__, errors\
+			), Rupture::Logging::CAT_GL);\
+		__debugbreak();\
+	}\
+} while(0)
 #endif
