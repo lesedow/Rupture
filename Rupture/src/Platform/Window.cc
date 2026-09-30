@@ -73,11 +73,22 @@ namespace Rupture::Platform
 
 		ShowWindow(Window_, SW_SHOWDEFAULT);
 	}
-
+	
+	glm::ivec2 Window::GetDimensions() const
+	{
+		return Dimensions_;
+	}
+	
 	void Window::SwapFramebuffers() const
 	{
 		BOOL swapped = SwapBuffers(DeviceContext_);
 		RP_WINAPI(!swapped);
+	}
+
+	void Window::OnWindowResize(UINT width, UINT height)
+	{
+		Dimensions_.x = width;
+		Dimensions_.y = height;
 	}
 
 	void Window::CreateGLContext()
@@ -111,15 +122,19 @@ namespace Rupture::Platform
 		RP_WINAPI(!setContext);
 	}
 
-	LRESULT Window::HandleMessages(UINT uMsg, WPARAM wParam, LPARAM lParam) const
+	LRESULT Window::HandleMessages(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		switch (uMsg)
 		{ 
-		case WM_KEYDOWN:
-			// Logging::LogInfo(std::format("Pressed key: {}", (char)wParam), Logging::CAT_WINAPI);
-			break;
 		case WM_DESTROY:
 			PostQuitMessage(0);
+			return 0;
+		case WM_SIZE:
+			{
+				UINT width = LOWORD(lParam);
+				UINT height = HIWORD(lParam);
+				OnWindowResize(width, height);
+			}
 			return 0;
 		default:
 			return DefWindowProc(Window_, uMsg, wParam, lParam);
