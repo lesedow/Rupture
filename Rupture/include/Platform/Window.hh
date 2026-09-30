@@ -21,10 +21,12 @@ namespace Rupture::Platform
 		~Window();
 		
 		void CreateGLContext();
+		glm::ivec2 GetDimensions() const;
 		HDC GetDeviceContext() const;
 		HGLRC GetGLContext() const;
 		void SwapFramebuffers() const;
+		void OnWindowResize(UINT width, UINT height);
 	protected:
-		LRESULT HandleMessages(UINT uMsg, WPARAM wParam, LPARAM lParam) const;
+		LRESULT HandleMessages(UINT uMsg, WPARAM wParam, LPARAM lParam);
 	};
 }
