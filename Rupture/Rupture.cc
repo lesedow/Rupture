@@ -6,6 +6,8 @@
 
 #include "Utils/Logging/Logging.hh"
 #include "Utils/Macros/WinApiMacros.hh"
+#include "Platform/WinApiConsole.hh"
+#include "Platform/Console.hh"
 
 #pragma warning(push)
 #pragma warning(disable: 28251)
@@ -20,28 +22,11 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PWSTR lpCmdLine
 	// So apparently windows only has support for legacy GL 
 	// The first thing to do is pull the wglCreateContextARB method to create a MODERN GL context
 	// I need to do that with a dummy window first and then recreate the window with the new stuff
-#ifdef RUPTURE_DEBUG
-
-	AllocConsole();
-
-	FILE* file;
-
-	freopen_s(&file, "CONOUT$", "w", stdout);
-	freopen_s(&file, "CONOUT$", "w", stderr);
-	freopen_s(&file, "CONIN$", "r", stdin);
-
-	HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
-	unsigned long consoleMode{};
-	
-	BOOL getCModeSuccess = GetConsoleMode(handle, &consoleMode);
-	RP_WINAPI(!getCModeSuccess);
-
-	consoleMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
-
-	BOOL setCModeSuccess = SetConsoleMode(handle, consoleMode);
-	RP_WINAPI(!setCModeSuccess);
-
-#endif
+	Rupture::Platform::WinApiConsole Console{};
+	Console.SetTitle("Rupture 2D OpenGL 3.3 Engine");
+	Console.Write("Hello World\n");
+	Console.Write("Hello World\n");
+	Console.Write("Hello World\n");
 
 	if (!Rupture::Graphics::GL::LoadGLMethods())
 	{
@@ -58,11 +43,10 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PWSTR lpCmdLine
 	std::string glRenderer(reinterpret_cast<const char*>(RGL::glGetString(RGL::GL_RENDERER)));
 	std::string glGlsl(reinterpret_cast<const char*>(RGL::glGetString(RGL::GL_SHADING_LANGUAGE_VERSION)));
 
-	Rupture::Logging::LogTrace(std::format("Running GL Version: {}", glVersion), Rupture::Logging::CAT_GL);
-	Rupture::Logging::LogInfo(std::format("Vendor: {}", glVendor), Rupture::Logging::CAT_GL);
-	Rupture::Logging::LogDebug(std::format("Renderer: {}", glRenderer), Rupture::Logging::CAT_GL);
+	Rupture::Logging::LogWarn(std::format("Running GL Version: {}", glVersion), Rupture::Logging::CAT_GL);
+	Rupture::Logging::LogWarn(std::format("Vendor: {}", glVendor), Rupture::Logging::CAT_GL);
+	Rupture::Logging::LogWarn(std::format("Renderer: {}", glRenderer), Rupture::Logging::CAT_GL);
 	Rupture::Logging::LogWarn(std::format("GLSL Version: {}", glGlsl), Rupture::Logging::CAT_GL);
-	Rupture::Logging::LogError(std::format("GLSL Version: {}", glGlsl), Rupture::Logging::CAT_GL);
 
 	MSG message{};
 	bool running = true;
@@ -80,11 +64,16 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PWSTR lpCmdLine
 			DispatchMessage(&message);
 		}
 
+		glm::ivec2 dimensions = ruptureWindow.GetDimensions();
+
 		RP_GL(RGL::glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
 		RP_GL(RGL::glClear(RGL::GL_COLOR_BUFFER_BIT | RGL::GL_DEPTH_BUFFER_BIT));
+		RP_GL(RGL::glViewport(0, 0, dimensions.x, dimensions.y));
 
 		Renderer_.StartBatch();
+		Renderer_.BatchQuad(glm::vec2(SCREEN_W / 4.0f, SCREEN_H / 2.0f), glm::vec2(300.0f, 300.0f), glm::vec4(1.0f));
 		Renderer_.BatchQuad(glm::vec2(SCREEN_W / 2.0f, SCREEN_H / 2.0f), glm::vec2(300.0f, 300.0f), glm::vec4(1.0f));
+		Renderer_.BatchQuad(glm::vec2(SCREEN_W / 2.0f + SCREEN_W / 4.0f, SCREEN_H / 2.0f), glm::vec2(300.0f, 300.0f), glm::vec4(1.0f));
 		Renderer_.EndBatch();
 
 		ruptureWindow.SwapFramebuffers();
