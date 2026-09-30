@@ -4,9 +4,9 @@
 
 namespace Rupture::Utils::Platform
 {
-	inline std::string GetFormattedErrorMessage(DWORD errorID)
+	inline std::wstring GetFormattedErrorMessage(DWORD errorID)
 	{
-		char* buffer{ nullptr };
+		wchar_t* buffer{ nullptr };
 
 		DWORD length = FormatMessage(
 			FORMAT_MESSAGE_ALLOCATE_BUFFER |
@@ -24,10 +24,10 @@ namespace Rupture::Utils::Platform
 		if (length == 0)
 		{
 			DWORD currentErrorId = GetLastError();
-			return std::format("Failed to format last error: ID - {}", currentErrorId);
+			return std::format(L"Failed to format last error: ID - {}", currentErrorId);
 		}
 
-		std::string message(buffer, length);
+		std::wstring message(buffer, length);
 		LocalFree(buffer);
 
 		return message;
