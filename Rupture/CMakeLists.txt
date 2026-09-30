@@ -23,6 +23,7 @@ target_sources(Rupture PRIVATE
     src/Graphics/GL/GLBuffer.cc
     src/Graphics/GL/VertexArrayObject.cc
     src/Platform/Window.cc
+    src/Platform/WinApiConsole.cc
     src/Logging/Logger.cc
     src/Rendering/GLRenderer.cc
     src/Utils/StbImgImpl.cc
