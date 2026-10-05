@@ -7,7 +7,7 @@ namespace Rupture::Platform
     class WinApiConsole : public Console
     {
     private:
-        HANDLE StdOut_;
+        HANDLE m_StdOut;
     public:
         WinApiConsole();
         ~WinApiConsole();

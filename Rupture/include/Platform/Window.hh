@@ -7,13 +7,13 @@ namespace Rupture::Platform
 	class Window
 	{
 	protected:
-		HWND Window_;
+		HWND m_Window;
 	private:
-		HDC DeviceContext_;
-		HGLRC GLContext_;
+		HDC m_DeviceContext;
+		HGLRC m_GLContext;
 		
-		glm::ivec2 Dimensions_;
-		std::wstring Name_;
+		glm::ivec2 m_Dimensions;
+		std::wstring m_Name;
 	public:
 		static LRESULT WinProc(HWND windowHandle, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
