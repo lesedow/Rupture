@@ -15,9 +15,9 @@ namespace Rupture::Graphics::GL
 	class ShaderProgram
 	{
 	private:
-		GLuint id_;
-		std::vector<GLuint> shaderIds_;
-		std::unordered_map<std::string, GLuint> uniformsCache_;
+		GLuint m_ID;
+		std::vector<GLuint> m_ShaderIDs;
+		std::unordered_map<std::string, GLuint> m_UniformsCache;
 	private:
 		std::string LoadShaderFromPath(const std::filesystem::path& path);
 	public:

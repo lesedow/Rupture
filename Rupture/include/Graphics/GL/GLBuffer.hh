@@ -7,8 +7,8 @@ namespace Rupture::Graphics::GL
 	class GLBuffer
 	{
 	private:
-		GLuint ID_;
-		GLenum Type_;
+		GLuint m_ID;
+		GLenum m_Type;
 	public:
 		GLBuffer(GLenum type);
 		~GLBuffer();

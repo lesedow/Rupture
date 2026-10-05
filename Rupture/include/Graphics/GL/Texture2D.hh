@@ -8,8 +8,8 @@ namespace Rupture::Graphics::GL
 	class Texture2D
 	{
 	private:
-		glm::vec2 Size_;
-		GLuint ID_;
+		glm::vec2 m_Size;
+		GLuint m_ID;
 	public:
 		Texture2D();
 		Texture2D(const std::string& path);
