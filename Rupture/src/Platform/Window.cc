@@ -23,7 +23,7 @@ namespace Rupture::Platform
 			LONG_PTR lPtr = SetWindowLongPtr(windowHandle, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(self));
 			RP_WINAPI(!lPtr);
 
-			self->Window_ = windowHandle;
+			self->m_Window = windowHandle;
 		}
 		else {
 			SetLastError(ERROR_SUCCESS);
@@ -44,7 +44,7 @@ namespace Rupture::Platform
 	Window::~Window() {}
 
 	Window::Window(glm::ivec2 dimensions, std::wstring_view name)
-		:Dimensions_(dimensions), Name_(name)
+		:m_Dimensions(dimensions), m_Name(name)
 	{
 		const std::wstring CLASS_NAME = L"Rupture";
 
@@ -60,40 +60,40 @@ namespace Rupture::Platform
 		ATOM registeredClass{ RegisterClass(&windowClass) };
 		RP_WINAPI(registeredClass == 0);
 
-		Window_ = CreateWindowEx(
+		m_Window = CreateWindowEx(
 			WS_EX_OVERLAPPEDWINDOW,
 			CLASS_NAME.c_str(),
-			Name_.c_str(),
+			m_Name.c_str(),
 			WS_OVERLAPPEDWINDOW,
-			CW_USEDEFAULT, CW_USEDEFAULT, Dimensions_.x, Dimensions_.y,
+			CW_USEDEFAULT, CW_USEDEFAULT, m_Dimensions.x, m_Dimensions.y,
 			nullptr, nullptr, instance, this
 		);
 
-		RP_WINAPI(!Window_);
+		RP_WINAPI(!m_Window);
 
-		ShowWindow(Window_, SW_SHOWDEFAULT);
+		ShowWindow(m_Window, SW_SHOWDEFAULT);
 	}
 	
 	glm::ivec2 Window::GetDimensions() const
 	{
-		return Dimensions_;
+		return m_Dimensions;
 	}
 	
 	void Window::SwapFramebuffers() const
 	{
-		BOOL swapped = SwapBuffers(DeviceContext_);
+		BOOL swapped = SwapBuffers(m_DeviceContext);
 		RP_WINAPI(!swapped);
 	}
 
 	void Window::OnWindowResize(UINT width, UINT height)
 	{
-		Dimensions_.x = width;
-		Dimensions_.y = height;
+		m_Dimensions.x = width;
+		m_Dimensions.y = height;
 	}
 
 	void Window::CreateGLContext()
 	{
-		DeviceContext_ = GetDC(Window_);
+		m_DeviceContext= GetDC(m_Window);
 		
 		UINT numberOfFormats{};
 		int pixelFormat{};
@@ -102,23 +102,23 @@ namespace Rupture::Platform
 		PIXELFORMATDESCRIPTOR pixelFormatDescriptor{};
 
 		BOOL pixelFormatChosen{ Rupture::Graphics::GL::wglChoosePixelFormatARB(
-			DeviceContext_, Rupture::Graphics::GL::RGBA_32_24_8,
+			m_DeviceContext, Rupture::Graphics::GL::RGBA_32_24_8,
 			nullptr, 1, &pixelFormat,
 			&numberOfFormats
 			) };
 		RP_WINAPI(!pixelFormatChosen);
 			
-		BOOL pixelFormatSet{ SetPixelFormat(DeviceContext_, pixelFormat, &pixelFormatDescriptor) };
+		BOOL pixelFormatSet{ SetPixelFormat(m_DeviceContext, pixelFormat, &pixelFormatDescriptor) };
 		RP_WINAPI(!pixelFormatSet);
 
-		GLContext_ = Rupture::Graphics::GL::wglCreateContextAttribsARB(
-			DeviceContext_,
+		m_GLContext = Rupture::Graphics::GL::wglCreateContextAttribsARB(
+			m_DeviceContext,
 			nullptr,
 			Rupture::Graphics::GL::CORE_3_3
 		);
-		RP_WINAPI(!GLContext_);
+		RP_WINAPI(!m_GLContext);
 
-		BOOL setContext = wglMakeCurrent(DeviceContext_, GLContext_);
+		BOOL setContext = wglMakeCurrent(m_DeviceContext, m_GLContext);
 		RP_WINAPI(!setContext);
 	}
 
@@ -137,17 +137,17 @@ namespace Rupture::Platform
 			}
 			return 0;
 		default:
-			return DefWindowProc(Window_, uMsg, wParam, lParam);
+			return DefWindowProc(m_Window, uMsg, wParam, lParam);
 		}
 	}
 
 	HDC Window::GetDeviceContext() const
 	{
-		return DeviceContext_;
+		return m_DeviceContext;
 	}
 
 	HGLRC Window::GetGLContext() const
 	{
-		return GLContext_;
+		return m_GLContext;
 	}
 }

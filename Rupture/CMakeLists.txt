@@ -25,7 +25,7 @@ target_sources(Rupture PRIVATE
     src/Platform/Window.cc
     src/Platform/WinApiConsole.cc
     src/Logging/Logger.cc
-    src/Rendering/GLRenderer.cc
+    src/Graphics/GL/GLRenderer.cc
     src/Utils/StbImgImpl.cc
 )
 

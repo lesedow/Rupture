@@ -15,16 +15,16 @@ namespace Rupture::Platform
         freopen_s(&stream, "CONOUT$", "w", stderr);
         freopen_s(&stream, "CONIN$", "r", stdin);
 
-        StdOut_ = GetStdHandle(STD_OUTPUT_HANDLE);
-        RP_CLWINAPI(StdOut_ == INVALID_HANDLE_VALUE);
+        m_StdOut = GetStdHandle(STD_OUTPUT_HANDLE);
+        RP_CLWINAPI(m_StdOut == INVALID_HANDLE_VALUE);
 
         // Enabling VTS
         DWORD mode{};
-        BOOL succesGetMode = GetConsoleMode(StdOut_, &mode);
+        BOOL succesGetMode = GetConsoleMode(m_StdOut, &mode);
         RP_CLWINAPI(!succesGetMode);
         mode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING; 
 
-        BOOL succesSetMode = SetConsoleMode(StdOut_, mode);
+        BOOL succesSetMode = SetConsoleMode(m_StdOut, mode);
         RP_CLWINAPI(!succesSetMode);
     }
 
@@ -32,7 +32,7 @@ namespace Rupture::Platform
 
     void WinApiConsole::WriteImplementation(std::wstring_view message) const
     {
-        WriteConsole(StdOut_, message.data(), message.size(), nullptr, nullptr);
+        WriteConsole(m_StdOut, message.data(), message.size(), nullptr, nullptr);
     }
 
     void WinApiConsole::WriteImplementation(std::string_view message) const
@@ -47,7 +47,7 @@ namespace Rupture::Platform
             convertedMessage.data(), 
             convertedMessage.size());
             
-        WriteConsole(StdOut_, convertedMessage.data(), convertedMessage.size(), nullptr, nullptr);
+        WriteConsole(m_StdOut, convertedMessage.data(), convertedMessage.size(), nullptr, nullptr);
     }
 
     void WinApiConsole::SetTitle(std::string_view title) const
