@@ -9,14 +9,14 @@
 namespace Rupture::Graphics::GL
 {
 	ShaderProgram::ShaderProgram()
-		:shaderIds_{}, uniformsCache_{}
+		:m_ShaderIDs{}, m_UniformsCache{}
 	{
-		RP_GL(id_ = glCreateProgram());
+		RP_GL(m_ID = glCreateProgram());
 	}
 
 	ShaderProgram::~ShaderProgram()
 	{
-		RP_GL(glDeleteProgram(id_));
+		RP_GL(glDeleteProgram(m_ID));
 	}
 
 	std::string ShaderProgram::LoadShaderFromPath(const std::filesystem::path& path)
@@ -64,45 +64,45 @@ namespace Rupture::Graphics::GL
 			Logging::LogError(std::format("Failed to compile shader: {}", message), Logging::CAT_GL);
 		};
 
-		shaderIds_.emplace_back(id);
+		m_ShaderIDs.emplace_back(id);
 	}
 
 	void ShaderProgram::LinkProgram()
 	{
-		for (const auto& shaderId : shaderIds_)
+		for (const auto& shaderId : m_ShaderIDs)
 		{
-			RP_GL(glAttachShader(id_, shaderId));
+			RP_GL(glAttachShader(m_ID, shaderId));
 		}
 
-		glLinkProgram(id_);
+		glLinkProgram(m_ID);
 		GLint result{};
-		RP_GL(glGetProgramiv(id_, GL_LINK_STATUS, &result));
+		RP_GL(glGetProgramiv(m_ID, GL_LINK_STATUS, &result));
 
 		if (result == GL_FALSE) {
 			GLint length{};
 
-			RP_GL(glGetProgramiv(id_, GL_INFO_LOG_LENGTH, &length));
+			RP_GL(glGetProgramiv(m_ID, GL_INFO_LOG_LENGTH, &length));
 
 			std::string message{};
 			message.resize(length);
 
-			RP_GL(glGetProgramInfoLog(id_, length, nullptr, message.data()));
+			RP_GL(glGetProgramInfoLog(m_ID, length, nullptr, message.data()));
 
 			Logging::LogError(std::format("Failed to link shader program: {}", message), Logging::CAT_GL);
 		};
 
-		for (const auto& shaderId : shaderIds_)
+		for (const auto& shaderId : m_ShaderIDs)
 		{
-			RP_GL(glDetachShader(id_, shaderId));
+			RP_GL(glDetachShader(m_ID, shaderId));
 			RP_GL(glDeleteShader(shaderId));
 		}
 
-		shaderIds_.clear();
+		m_ShaderIDs.clear();
 	}
 
 	void ShaderProgram::UseProgram() const
 	{
-		RP_GL(glUseProgram(id_));
+		RP_GL(glUseProgram(m_ID));
 	}
 
 	void ShaderProgram::SetUniform1f(const char* name, GLfloat v0)
@@ -269,21 +269,21 @@ namespace Rupture::Graphics::GL
 
 	GLint ShaderProgram::GetCachedUniformLocation(const char* name)
 	{
-		auto iterator = uniformsCache_.find(name);
-		if (iterator != uniformsCache_.end()) {
+		auto iterator = m_UniformsCache.find(name);
+		if (iterator != m_UniformsCache.end()) {
 			return iterator->second;
 		}
 
 		GLint location;
-		RP_GL(location = glGetUniformLocation(id_, name));
+		RP_GL(location = glGetUniformLocation(m_ID, name));
 
 		if (location == -1)
 			Logging::LogError(std::format(
-				"Uniform {} is not avaliable in shader program {}!\n", name, id_), 
+				"Uniform {} is not avaliable in shader program {}!\n", name, m_ID), 
 					Logging::CAT_GL
 				);
 		
-		uniformsCache_.emplace(name, location);
+		m_UniformsCache.emplace(name, location);
 
 		return location;
 	}

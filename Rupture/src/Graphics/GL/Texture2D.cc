@@ -9,12 +9,12 @@ namespace Rupture::Graphics::GL
 {
 	// Generates a white texture by default
 	Texture2D::Texture2D()
-		:Size_(glm::vec2(1.0f, 1.0f))
+		:m_Size(glm::vec2(1.0f, 1.0f))
 	{
 		GLuint white{ 0xFFFFFF };
 
-		RP_GL(glGenTextures(1, &ID_));
-		RP_GL(glBindTexture(GL_TEXTURE_2D, ID_));
+		RP_GL(glGenTextures(1, &m_ID));
+		RP_GL(glBindTexture(GL_TEXTURE_2D, m_ID));
 
 		RP_GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));
 		RP_GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
@@ -31,7 +31,7 @@ namespace Rupture::Graphics::GL
 
 	Texture2D::~Texture2D()
 	{
-		RP_GL(glDeleteTextures(1, &ID_));
+		RP_GL(glDeleteTextures(1, &m_ID));
 	}
 
 	Texture2D::Texture2D(const std::string& path)
@@ -42,11 +42,11 @@ namespace Rupture::Graphics::GL
 		if (!imageData)
 			Logging::LogError(std::format("Failed to load image: {}", path), Logging::CAT_GL);
 
-		Size_ = glm::vec2(width, height);
+		m_Size = glm::vec2(width, height);
 		GLenum pixelFormat = channels == 4 ? GL_RGBA : GL_RGB;
 
-		RP_GL(glGenTextures(1, &ID_));
-		RP_GL(glBindTexture(GL_TEXTURE_2D, ID_));
+		RP_GL(glGenTextures(1, &m_ID));
+		RP_GL(glBindTexture(GL_TEXTURE_2D, m_ID));
 
 		RP_GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));
 		RP_GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
@@ -63,11 +63,11 @@ namespace Rupture::Graphics::GL
 		stbi_image_free(imageData);
 	}
 
-	glm::vec2 Texture2D::GetSize() const { return Size_; }
+	glm::vec2 Texture2D::GetSize() const { return m_Size; }
 
 	void Texture2D::Bind(GLenum slot) const
 	{
 		RP_GL(glActiveTexture(slot));
-		RP_GL(glBindTexture(GL_TEXTURE_2D, ID_));
+		RP_GL(glBindTexture(GL_TEXTURE_2D, m_ID));
 	}
 }
