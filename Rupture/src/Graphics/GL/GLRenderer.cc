@@ -99,7 +99,7 @@ namespace Rupture::Graphics
 		RP_GL(Graphics::GL::glVertexAttribDivisor(6, 1));
 		RP_GL(Graphics::GL::glVertexAttribDivisor(7, 1));
 
-		VertexArrayObject_.Unbind();
+		m_QuadVao.Unbind();
 	}
 
 	GLRenderer::~GLRenderer() {}
@@ -115,18 +115,18 @@ namespace Rupture::Graphics
 			int vertex = index % 6;
 			int offset = quad * 4;
 
-			Indices_.push_back(offset + vertices[vertex]);
+			m_Indices.push_back(offset + vertices[vertex]);
 		}
 	}
 
 	void GLRenderer::StartBatch()
 	{
-		InstancesData_.clear();
+		m_InstancesData.clear();
 	}
 
 	void GLRenderer::EndBatch()
 	{
-		 VertexArrayObject_.Bind();
+		 m_QuadVao.Bind();
 
 		RP_GL(Graphics::GL::glBufferSubData(
 			Graphics::GL::GL_ARRAY_BUFFER, 0, 

@@ -1,27 +1,18 @@
-#include "Logging/Logger.hh"
+#include "Logging/Logging.hh"
 
 namespace Rupture::Logging
 {
-	Logger& Logger::GetInstance() {
-		static Logger instance;
-		return instance;
-	}
-
-	void Logger::Log(
-		std::string_view message, 
-		std::string_view category,
-		std::string_view color,
-		std::string_view lvl) const
+	void Log(std::string_view message, std::string_view category, std::string_view color, std::string_view lvl)
 	{
 		std::string timeStamp = GetTimestamp();
-		
+
 		// This assumes VST is enabled
 		std::cout << color;
-		
+
 		std::cout << std::format("{}{}{}: {}\n", timeStamp, category, lvl, message);
 	}
 
-	std::string Logger::GetTimestamp() const
+	std::string GetTimestamp()
 	{
 		const auto now = std::chrono::system_clock::now();
 		const auto seconds = std::chrono::time_point_cast<std::chrono::seconds>(now);
@@ -30,4 +21,10 @@ namespace Rupture::Logging
 
 		return std::format("[{:%H:%M:%S}]", localTime);
 	}
+
+	DEF_LOG(Trace, TRACE);
+	DEF_LOG(Debug, DEBUG);
+	DEF_LOG(Info, INFO);
+	DEF_LOG(Warn, WARN);
+	DEF_LOG(Error, ERROR);
 }
